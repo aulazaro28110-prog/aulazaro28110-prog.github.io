@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Álvaro Utazu · AI Engineer — Automatización de marketing y ventas</title>
+<meta name="description" content="AI Engineer especializado en hiperautomatización de procesos de marketing y ventas. Vengo de años de venta B2B en automoción y desde enero de 2026 construyo agentes de IA por mi cuenta. Cinco proyectos abiertos, con demo en vivo y métricas medidas."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#080a0f;--bg2:#0d1017;--elev:#12151d;--elev2:#171b24;
+ --line:rgba(232,184,75,.10);--line2:rgba(232,184,75,.22);--linew:rgba(255,255,255,.07);
+ --tx:#f6f2e9;--dim:#cbc4b1;--faint:#968f7e;
+ --gold:#e8b84b;--gold-hi:#f5d06e;--gold-soft:rgba(232,184,75,.12);
+ /* acento frío: SOLO para marcar "dato medido / IA". Nunca decorativo. */
+ --cool:#82b6d0;--cool-soft:rgba(130,182,208,.10);--cool-line:rgba(130,182,208,.30);
+ --r:16px;--ease:cubic-bezier(.16,1,.3,1);--maxw:1160px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:'Manrope',system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+/* moving background */
+#bgcanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55}
+.bgfx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bgfx span{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5}
+.bgfx .a{width:620px;height:620px;left:-10%;top:-14%;background:radial-gradient(circle,rgba(232,184,75,.16),transparent 62%);animation:drift1 26s var(--ease) infinite alternate}
+.bgfx .b{width:520px;height:520px;right:-8%;top:6%;background:radial-gradient(circle,rgba(245,208,110,.10),transparent 60%);animation:drift2 32s var(--ease) infinite alternate}
+.bgfx .c{width:560px;height:560px;left:30%;bottom:-20%;background:radial-gradient(circle,rgba(232,184,75,.08),transparent 60%);animation:drift3 38s var(--ease) infinite alternate}
+.bgfx::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent,var(--bg) 90%)}
+@keyframes drift1{to{transform:translate(120px,80px) scale(1.15)}}
+@keyframes drift2{to{transform:translate(-100px,120px) scale(1.1)}}
+@keyframes drift3{to{transform:translate(80px,-90px) scale(1.2)}}
+@media(prefers-reduced-motion:reduce){.bgfx span{animation:none}}
+.container{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:22px;position:relative;z-index:1}
+
+.mono{font-family:'JetBrains Mono',monospace}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;line-height:1.08;letter-spacing:-.02em}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:inline-flex;align-items:center;gap:9px}
+.eyebrow::before{content:'';width:24px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.section{padding-block:clamp(56px,8vw,104px)}
+.lead{color:var(--dim);font-size:clamp(16px,1.5vw,18px);max-width:60ch}
+.gold{color:var(--gold)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Manrope';font-weight:600;font-size:14.5px;line-height:1;padding:13px 20px;border-radius:999px;border:1px solid transparent;cursor:pointer;transition:transform .15s var(--ease),background .2s,border-color .2s,color .2s;white-space:nowrap}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.pri{background:var(--gold);color:#161200}
+.btn.pri:hover{background:var(--gold-hi)}
+.btn.ghost{background:transparent;color:var(--tx);border-color:var(--line2)}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn .todo{color:var(--gold);font-size:11px}
+
+/* nav */
+header.nav{position:sticky;top:0;z-index:50;height:64px;display:flex;align-items:center;background:rgba(8,10,15,.72);backdrop-filter:saturate(160%) blur(14px);border-bottom:1px solid var(--line)}
+.nav .container{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:inline-flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:700;font-size:18px}
+.brand .mk{width:24px;height:24px;display:grid;place-items:center;color:#161200;background:var(--gold);border-radius:7px;font-weight:800;font-size:12px}
+.nav-links{display:flex;gap:26px}
+.nav-links a{font-size:14.5px;color:var(--dim);font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--tx)}
+.nav-actions{display:flex;gap:10px;align-items:center}
+.nav-toggle{display:none;background:none;border:0;color:var(--tx);font-size:24px;cursor:pointer}
+
+/* hero */
+.hero{position:relative}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(28px,5vw,64px);align-items:center;padding-block:clamp(44px,7vw,92px)}
+.hero h1{font-size:clamp(38px,6vw,70px);font-weight:700}
+.hero h1 .g{background:linear-gradient(92deg,#f3efe6 10%,var(--gold) 55%,var(--gold-hi) 98%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero .lead{margin-top:22px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.badgecard{background:var(--elev);border:1px solid var(--line2);border-radius:var(--r);padding:22px}
+.badgecard .who{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.badgecard .av{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#efd48a,#b8892a);display:grid;place-items:center;font-family:'Space Grotesk';font-weight:700;font-size:22px;color:#161200;flex:none}
+.badgecard .nm{font-family:'Space Grotesk';font-weight:700;font-size:17px}
+.badgecard .rl{font-size:12.5px;color:var(--dim)}
+.badgecard .st{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#7be0a0;background:rgba(57,217,138,.1);border:1px solid rgba(57,217,138,.3);border-radius:999px;padding:4px 10px;margin-bottom:14px}
+.badgecard .st .d{width:7px;height:7px;border-radius:50%;background:#39d98a}
+.badgecard .facts{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--dim)}
+.badgecard .facts b{color:var(--tx)}
+
+/* franja de trayectoria: la historia en 5 segundos, sin abrir nada */
+.track{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line);margin-top:clamp(28px,4vw,44px)}
+.track .tp{padding:18px 22px 18px 0;position:relative}
+.track .tp+.tp{padding-left:26px;border-left:1px solid var(--line)}
+.track .tw{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:8px}
+.track .tw::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);flex:none;box-shadow:0 0 10px var(--gold)}
+.track .tp.now .tw{color:var(--cool)}
+.track .tp.now .tw::before{background:var(--cool);box-shadow:0 0 10px var(--cool)}
+.track .tt{font-size:14.5px;color:var(--tx);font-weight:600;margin-top:9px;line-height:1.4}
+.track .td{font-size:12.5px;color:var(--dim);margin-top:4px;line-height:1.55}
+@media(max-width:760px){.track{grid-template-columns:1fr}.track .tp{padding:14px 0}.track .tp+.tp{padding-left:0;border-left:none;border-top:1px solid var(--line)}}
+
+/* KPI cards — solo cifras medidas, cada una con su procedencia */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kpi{background:var(--elev);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;display:flex;flex-direction:column;transition:border-color .2s var(--ease),transform .2s var(--ease)}
+.kpi:hover{border-color:var(--line2);transform:translateY(-2px)}
+.kpi .fig{font-family:'JetBrains Mono';font-size:clamp(26px,3.2vw,38px);font-weight:600;color:var(--gold);line-height:1;letter-spacing:-.02em}
+.kpi .fig .u{font-size:.52em;margin-left:1px}
+.kpi .lb{color:var(--tx);font-size:14px;font-weight:600;margin-top:9px}
+.kpi .src{color:var(--faint);font-size:11px;line-height:1.5;margin-top:5px}
+.kpi .meter{height:5px;border-radius:4px;background:var(--elev2);overflow:hidden;margin-top:12px}
+.kpi .meter span{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold-hi));transition:width 1.1s var(--ease)}
+/* la variante fría marca "esto es una medición", no una promesa comercial */
+.kpi.measured{border-color:var(--cool-line);background:linear-gradient(160deg,var(--elev),var(--cool-soft))}
+.kpi.measured .fig{color:var(--cool)}
+.kpi.measured .meter span{background:linear-gradient(90deg,var(--cool),#a9d0e4)}
+.kpi-foot{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin-top:16px;font-size:13px;color:var(--dim)}
+.kpi-foot b{color:var(--tx);font-family:'JetBrains Mono'}
+.kpi-foot .sep{color:var(--faint)}
+@media(prefers-reduced-motion:reduce){.kpi .meter span{transition:none}}
+
+.head-block{max-width:720px;margin-bottom:34px}
+.head-block h2{font-size:clamp(27px,4vw,44px);font-weight:700}
+.head-block .lead{margin-top:14px}
+
+/* graph */
+.graph-app{position:relative;z-index:1;height:640px;display:flex;border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;background:rgba(10,12,18,.6)}
+.gstage{flex:1;position:relative;min-width:0}
+canvas#g{display:block;width:100%;height:100%;cursor:grab}
+canvas#g.drag{cursor:grabbing}
+.gtools{position:absolute;top:12px;left:12px;display:flex;gap:8px;flex-wrap:wrap;z-index:5}
+.gbtn{font-family:'JetBrains Mono';font-size:11px;background:rgba(12,15,22,.85);border:1px solid var(--line2);color:var(--dim);padding:7px 11px;border-radius:9px;cursor:pointer;transition:.15s;backdrop-filter:blur(6px)}
+.gbtn:hover{border-color:var(--gold);color:var(--gold)}
+.gbtn.on{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
+.gsearch{display:flex;align-items:center;gap:6px;background:rgba(12,15,22,.85);border:1px solid var(--line2);border-radius:9px;padding:7px 10px;backdrop-filter:blur(6px)}
+.gsearch input{background:transparent;border:none;outline:none;color:var(--tx);font-size:12px;width:140px;font-family:'Manrope'}
+.gsearch .ic{color:var(--faint)}
+.statbar{position:absolute;top:12px;right:12px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none;justify-content:flex-end;max-width:55%}
+.pill{font-family:'JetBrains Mono';font-size:10px;background:rgba(12,15,22,.8);border:1px solid var(--line2);border-radius:8px;padding:5px 9px;color:var(--dim)}
+.pill b{color:var(--gold)}
+.zoom{position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:6px;z-index:5}
+.zoom button{width:32px;height:32px;font-size:15px;background:rgba(12,15,22,.85);border:1px solid var(--line2);color:var(--dim);border-radius:9px;cursor:pointer;font-family:'JetBrains Mono'}
+.zoom button:hover{border-color:var(--gold);color:var(--gold)}
+.legend{position:absolute;left:12px;bottom:12px;display:flex;flex-direction:column;gap:5px;background:rgba(12,15,22,.85);border:1px solid var(--line2);border-radius:10px;padding:9px 11px;backdrop-filter:blur(6px);z-index:5}
+.legend .lg{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--dim);cursor:pointer;user-select:none}
+.legend .lg .dot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor}
+.legend .lg.off{opacity:.35;text-decoration:line-through}
+.legend .lgh{font-family:'JetBrains Mono';font-size:8.5px;letter-spacing:.13em;color:var(--faint);text-transform:uppercase;margin-bottom:2px}
+.legend .flowk{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--gold)}
+.legend .flowk .ln{width:14px;border-top:2px solid var(--gold)}
+.tip{position:absolute;pointer-events:none;background:rgba(8,10,15,.96);border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:11px;max-width:250px;display:none;z-index:9;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.tip .tt{font-weight:600}.tip .ts{color:var(--faint);font-size:10px;font-family:'JetBrains Mono';margin-top:2px}
+.tourbar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:none;align-items:center;gap:10px;background:rgba(12,15,22,.94);border:1px solid var(--gold);border-radius:12px;padding:8px 12px;backdrop-filter:blur(8px);z-index:12}
+.tourbar.show{display:flex}
+.tourbar .step{font-family:'JetBrains Mono';font-size:11px;color:var(--gold);white-space:nowrap}
+.tourbar button{font-family:'JetBrains Mono';font-size:12px;background:transparent;border:1px solid var(--line2);color:var(--tx);width:28px;height:28px;border-radius:8px;cursor:pointer}
+.tourbar button:hover{border-color:var(--gold);color:var(--gold)}
+.gside{width:330px;flex:none;border-left:1px solid var(--line2);background:rgba(8,10,15,.72);backdrop-filter:blur(10px);overflow-y:auto;padding:18px}
+.gside::-webkit-scrollbar{width:8px}.gside::-webkit-scrollbar-thumb{background:#3a2f18;border-radius:5px}
+.ins-empty{color:var(--faint);font-size:12.5px;text-align:center;margin-top:32px;line-height:1.7}
+.ins-empty .big{font-size:30px;margin-bottom:10px;filter:drop-shadow(0 0 12px rgba(232,184,75,.4))}
+.ins-tag{display:inline-block;font-family:'JetBrains Mono';font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:6px;margin-bottom:10px}
+.ins-title{font-size:18px;font-weight:700;color:#fff;line-height:1.2}
+.ins-meta{font-family:'JetBrains Mono';font-size:10.5px;color:var(--faint);margin-top:6px}
+.ins-desc{font-size:12.5px;color:var(--dim);line-height:1.6;margin-top:12px;border-left:2px solid var(--line2);padding-left:11px}
+.ins-h{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin:16px 0 9px;display:flex;gap:7px}
+.ins-h b{color:var(--gold)}
+.gmetrics{display:flex;gap:14px;margin:12px 0 2px;flex-wrap:wrap}
+.gmetric .v{font-family:'JetBrains Mono';font-size:19px;font-weight:600;color:var(--gold)}
+.gmetric .l{font-size:9.5px;color:var(--faint);text-transform:uppercase;margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font-size:10.5px;color:var(--dim);background:var(--elev2);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
+.ilinks{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ilink{font-family:'JetBrains Mono';font-size:11px;font-weight:600;color:var(--gold);border:1px solid var(--line2);border-radius:8px;padding:7px 11px;transition:.13s}
+.ilink:hover{border-color:var(--gold)}
+.ilink.soft{color:var(--tx)}
+.ilink.soon{color:var(--faint);border-style:dashed;cursor:default}
+.conn{display:flex;flex-direction:column;gap:6px}
+.conn a{display:flex;align-items:center;gap:9px;background:#0e1119;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:12px;color:var(--tx);cursor:pointer;transition:.13s}
+.conn a:hover{border-color:var(--gold);transform:translateX(2px)}
+.conn a .cdot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 7px currentColor}
+.conn a .ck{font-family:'JetBrains Mono';font-size:9px;color:var(--faint);margin-left:auto}
+.note{font-size:11px;color:var(--faint);background:#0e1119;border:1px solid var(--line);border-radius:9px;padding:11px 13px;line-height:1.6;margin-top:14px}
+.note b{color:var(--gold)}
+
+/* cards */
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+.card{background:var(--elev);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;transition:.2s var(--ease)}
+.card:hover{border-color:var(--line2);transform:translateY(-2px)}
+.card.flag{grid-column:1/-1;background:linear-gradient(135deg,var(--elev),rgba(232,184,75,.07));border-color:var(--line2)}
+.flagtag{font-family:'JetBrains Mono';font-size:9.5px;font-weight:600;letter-spacing:.06em;color:var(--gold);border:1px solid var(--line2);background:var(--gold-soft);padding:3px 9px;border-radius:999px;align-self:flex-start;margin-bottom:10px}
+.card h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.card p{color:var(--dim);font-size:.92rem;margin-bottom:14px}
+.card p b{color:var(--tx)}
+.cmetrics{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.cmetric .v{font-family:'JetBrains Mono';font-size:1.2rem;font-weight:600;color:var(--gold)}
+.cmetric .l{font-size:.68rem;color:var(--faint);text-transform:uppercase;margin-top:3px}
+.clinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+.expander{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.expander summary{list-style:none;cursor:pointer;font-family:'JetBrains Mono';font-size:11.5px;color:var(--gold);display:flex;align-items:center;gap:6px}
+.expander summary::-webkit-details-marker{display:none}
+.expander summary .ar{transition:transform .2s}
+.expander[open] summary .ar{transform:rotate(45deg)}
+.filelist{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.filelist a,.filelist span{display:flex;gap:8px;font-size:12px;color:var(--dim);padding:4px 0}
+.filelist a:hover{color:var(--gold)}
+.filelist .fk{font-family:'JetBrains Mono';font-size:9px;color:var(--faint)}
+
+/* interactive project cards */
+.pcard{background:var(--elev);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;transition:.2s var(--ease)}
+.pcard:hover{border-color:var(--line2)}
+.pcard.flag{grid-column:1/-1;background:linear-gradient(135deg,var(--elev),rgba(232,184,75,.07));border-color:var(--line2)}
+.pc-star{font-family:'JetBrains Mono';font-size:9.5px;font-weight:600;color:var(--gold);border:1px solid var(--line2);background:var(--gold-soft);padding:3px 9px;border-radius:999px;margin-bottom:12px;align-self:flex-start}
+.pc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.pc-top h3{font-size:1.15rem;font-weight:700}
+.pc-tag{font-family:'JetBrains Mono';font-size:10px;color:var(--gold);white-space:nowrap;margin-top:4px;text-align:right}
+.pc-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:12px 0 12px;border-bottom:1px solid var(--line)}
+.pc-tabs button{font-family:'JetBrains Mono';font-size:11.5px;background:none;border:none;border-bottom:2px solid transparent;color:var(--faint);padding:8px 6px;margin-bottom:-1px;cursor:pointer;transition:.15s}
+.pc-tabs button:hover{color:var(--dim)}
+.pc-tabs button.on{color:var(--gold);border-bottom-color:var(--gold)}
+.pc-body{flex:1;min-height:0}
+/* la tarjeta reparte el ancho: ficha a la izquierda, demo a la derecha */
+.pc-cols{display:grid;grid-template-columns:minmax(0,43fr) minmax(0,57fr);gap:clamp(20px,3vw,34px);margin-top:15px;align-items:stretch}
+.pc-info{display:flex;flex-direction:column;min-width:0}
+.pc-info .psr{margin-top:0}
+.pc-info .clinks{margin-top:auto;padding-top:18px}
+.pc-live{display:flex;flex-direction:column;min-width:0}
+.pc-live .pc-tabs{margin-top:0}
+@media(max-width:880px){.pc-cols{grid-template-columns:1fr;gap:14px}.pc-info .clinks{padding-top:14px}}
+.pc-panel{display:none}
+.pc-panel.on{display:block;animation:fadeup .28s var(--ease)}
+@keyframes fadeup{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.pc-panel p{color:var(--dim);font-size:.92rem;margin-bottom:10px}
+.pc-panel p b{color:var(--tx)}
+.pc-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.pc-list li{display:flex;gap:9px;font-size:.9rem;color:var(--dim)}
+.pc-list li::before{content:'▹';color:var(--gold);flex:none}
+.imp-bars{display:flex;flex-direction:column;gap:11px;margin:2px 0 16px}
+.imp-row .il{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:5px}
+.imp-row .il .a{color:var(--dim)}.imp-row .il .b{font-family:'JetBrains Mono';color:var(--tx);white-space:nowrap}
+.imp-bar{height:9px;border-radius:5px;background:var(--elev2);overflow:hidden}
+.imp-bar span{display:block;height:100%;border-radius:5px;transition:width .8s var(--ease)}
+.imp-row.antes .imp-bar span{background:linear-gradient(90deg,#e0654a,#c94a30)}
+.imp-row.despues .imp-bar span{background:linear-gradient(90deg,var(--gold),var(--gold-hi))}
+.imp-tiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.imp-tile{background:var(--elev2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.imp-tile .v{font-family:'JetBrains Mono';font-size:13px;font-weight:600;color:var(--gold);line-height:1.3}
+.imp-tile .l{font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:.03em;margin-top:5px}
+.imp-note{font-size:11px;color:var(--faint);line-height:1.55;border-left:2px solid var(--line2);padding-left:10px}
+.learn-note{background:var(--gold-soft);border:1px solid var(--line2);border-radius:10px;padding:13px 15px;font-size:.9rem;color:var(--dim);line-height:1.6}
+.learn-note b{color:var(--gold)}
+@media(max-width:600px){.imp-tiles{grid-template-columns:1fr}}
+.pc-sub{color:var(--dim);font-size:.9rem;margin-top:8px}
+/* Problema → Solución → Resultado: el nivel 1 de la tarjeta, una frase cada uno */
+.psr{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.psr .r{display:grid;grid-template-columns:86px 1fr;gap:12px;align-items:baseline;font-size:.9rem;line-height:1.5}
+.psr .k{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);padding-top:3px}
+.psr .v{color:var(--dim)}
+.psr .r.res .k{color:var(--gold)}
+.psr .r.res .v{color:var(--tx);font-weight:600}
+@media(max-width:520px){.psr .r{grid-template-columns:1fr;gap:2px}.psr .k{padding-top:0}}
+/* demos */
+.demo-hint{font-size:11.5px;color:var(--faint);margin-bottom:10px;line-height:1.5}
+.demo-hint b{color:var(--dim)}
+.demo-run{font-family:'JetBrains Mono';font-size:12px;font-weight:600;background:var(--gold);color:#161200;border:none;border-radius:8px;padding:10px 15px;cursor:pointer;transition:.15s}
+.demo-run:hover{background:var(--gold-hi)}
+.demo-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.demo-chip{font-size:11px;color:var(--dim);background:var(--elev2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;transition:.15s}
+.demo-chip:hover{border-color:var(--gold);color:var(--gold)}
+/* El chat crece con su contenido y solo hace scroll cuando ya está lleno:
+   nunca un hueco negro esperando a que alguien escriba. */
+.chat{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:0;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:8px;scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){.chat{scroll-behavior:auto}}
+.chat::-webkit-scrollbar{width:6px}.chat::-webkit-scrollbar-thumb{background:#3a2f18;border-radius:4px}
+.chat .m{max-width:84%;padding:8px 11px;border-radius:12px;font-size:12.5px;line-height:1.45;white-space:pre-line}
+.chat .m.u{align-self:flex-end;background:var(--gold);color:#161200;border-bottom-right-radius:3px}
+.chat .m.b{align-self:flex-start;background:var(--elev2);border:1px solid var(--line);color:var(--tx);border-bottom-left-radius:3px}
+.chat .m.in{animation:msgin .3s var(--ease)}
+@keyframes msgin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.chat .m.in{animation:none}}
+/* separador "lo de arriba es una transcripción real, lo de abajo lo escribes tú" */
+.chat .sep{align-self:center;font-family:'JetBrains Mono';font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:8px;width:100%;margin:2px 0}
+.chat .sep::before,.chat .sep::after{content:'';flex:1;height:1px;background:var(--line)}
+.demo-src{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--cool);border:1px solid var(--cool-line);background:var(--cool-soft);border-radius:999px;padding:3px 9px;display:inline-block;margin-bottom:9px}
+/* la regla que ha disparado esa respuesta: el motor real las registra igual */
+.chat .rule{align-self:flex-start;max-width:88%;font-family:'JetBrains Mono';font-size:9px;line-height:1.55;color:var(--cool);margin-top:-3px;padding-left:3px;display:flex;gap:6px}
+.chat .rule::before{content:'⎿';opacity:.7;flex:none}
+/* estado de reposo de los demos de botón: se ve el dato antes de pulsar */
+.demo-idle{opacity:.55;transition:opacity .4s var(--ease)}
+.demo-idle.live{opacity:1}
+.chart.idle .fill{background:var(--elev2)}
+.chat-in{display:flex;gap:6px}
+.chat-in input{flex:1;background:var(--elev2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--tx);font-size:12.5px;outline:none;font-family:'Manrope'}
+.chat-in input:focus{border-color:var(--gold)}
+.chat-in button{background:var(--gold-soft);border:1px solid var(--gold);color:var(--gold);border-radius:8px;padding:0 13px;cursor:pointer;font-size:14px}
+.drow{display:flex;align-items:center;gap:10px;padding:8px 11px;background:var(--elev2);border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:12px;transition:opacity .5s var(--ease)}
+.drow.gone{opacity:.28}.drow.gone .nm{text-decoration:line-through}
+.drow .nm{flex:1;color:var(--tx)}
+.drow .sc{font-family:'JetBrains Mono';font-weight:600}
+.drow .tmp{font-size:9.5px;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.tmp.hot{background:rgba(224,101,74,.15);color:#f0876e;border:1px solid rgba(224,101,74,.3)}
+.tmp.warm{background:var(--gold-soft);color:var(--gold);border:1px solid var(--line2)}
+.tmp.cold{background:var(--elev);color:var(--faint);border:1px solid var(--line)}
+.dmini{display:block;height:6px;border-radius:4px;background:var(--elev);overflow:hidden;width:56px;flex:none}
+.dmini span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-hi));transition:width .6s var(--ease)}
+.chart{display:flex;align-items:flex-end;gap:12px;height:118px;padding:8px 4px 0;border-bottom:1px solid var(--line);margin-bottom:10px}
+.chart .bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:flex-end;height:100%}
+.chart .bar .fill{width:100%;max-width:32px;background:linear-gradient(180deg,var(--gold-hi),var(--gold));border-radius:5px 5px 0 0;transition:height .7s var(--ease);height:0}
+.chart .bar .lb{font-size:9px;color:var(--faint);text-align:center}
+.chart .bar .vv{font-family:'JetBrains Mono';font-size:10px;color:var(--tx)}
+.dresult{font-size:12px;color:var(--dim);margin-top:4px}
+.dresult b{color:var(--gold);font-family:'JetBrains Mono'}
+.tlist{display:flex;flex-direction:column;gap:6px;margin-bottom:9px}
+.titem{display:flex;align-items:center;gap:10px;background:var(--elev2);border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px}
+.titem .ck{width:17px;height:17px;border:1.5px solid var(--gold);border-radius:4px;cursor:pointer;flex:none;display:grid;place-items:center;color:var(--gold);font-size:11px}
+.titem.done .tx{text-decoration:line-through;color:var(--faint)}
+.titem .tx{flex:1}
+.titem .del{color:var(--faint);cursor:pointer;font-size:13px}
+.titem .del:hover{color:#e0654a}
+
+/* esquema RAG: ocupa toda la fila, entre VendIQ y el resto de proyectos */
+.ragcard{grid-column:1/-1;background:linear-gradient(150deg,var(--elev),rgba(232,184,75,.05));border:1px solid var(--line2);border-radius:var(--r);padding:20px 24px 18px}
+.ragcard .kick{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px}
+.ragcard .kick::before{content:'';width:26px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.ragcard h3{font-size:clamp(17px,2.2vw,23px);font-weight:700;margin-top:10px;line-height:1.16;max-width:52ch}
+.ragcard h3 .g{color:var(--gold)}
+.ragcard .sub{color:var(--dim);font-size:13.5px;margin-top:8px;max-width:88ch;line-height:1.55}
+/* el SVG no se encoge hasta ser ilegible: por debajo de su ancho, la figura hace scroll */
+.ragfig{margin-top:14px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.ragfig::-webkit-scrollbar{height:7px}
+.ragfig::-webkit-scrollbar-thumb{background:#3a2f18;border-radius:5px}
+.ragfig svg{display:block;width:100%;height:auto;min-width:720px}
+.ragleg{font-family:'JetBrains Mono';font-size:10px;color:var(--faint);margin-top:11px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.ragleg .lg{display:inline-flex;align-items:center;gap:9px}
+.ragleg .sw{width:24px;height:0;border-top:2px solid var(--gold)}
+.ragleg .sw.dash{border-top:2px dashed #7a6329}
+.ragleg b{color:var(--dim);font-weight:500}
+@media(max-width:560px){.ragcard{padding:18px}.ragfig{margin-top:16px}}
+
+/* deep dive: el grafo de ficheros, relegado a nivel 3 */
+.deepdive{border:1px solid var(--line2);border-radius:var(--r);background:linear-gradient(140deg,var(--elev),rgba(232,184,75,.04));overflow:hidden}
+.deepdive>summary{list-style:none;cursor:pointer;padding:20px 22px;display:flex;align-items:center;gap:16px}
+.deepdive>summary::-webkit-details-marker{display:none}
+.deepdive>summary:hover .dd-t{color:var(--gold)}
+.deepdive>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.dd-ic{width:42px;height:42px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:20px;background:var(--elev2);border:1px solid var(--line2)}
+.dd-t{font-family:'Space Grotesk';font-weight:700;font-size:clamp(17px,2.2vw,21px);transition:color .2s}
+.dd-s{font-size:13px;color:var(--dim);margin-top:3px;line-height:1.5}
+.dd-p{margin-left:auto;flex:none;color:var(--gold);font-size:24px;transition:transform .25s var(--ease)}
+.deepdive[open] .dd-p{transform:rotate(45deg)}
+.dd-body{padding:0 22px 22px}
+@media(prefers-reduced-motion:reduce){.dd-p{transition:none}}
+
+/* exp / certs */
+.row{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.row .ic{width:44px;height:44px;border-radius:10px;flex:none;display:grid;place-items:center;font-size:22px;background:var(--elev2);border:1px solid var(--line)}
+.row .rt{font-weight:600;font-size:15px}
+.row .rs{font-size:13.5px;color:var(--dim)}
+.row .rm{font-size:12.5px;color:var(--faint);margin-top:1px}
+.row .rx{font-size:13px;color:var(--dim);margin-top:8px}
+/* certificados compactados: chips en una fila, no 6 tarjetas grandes */
+.certs{display:flex;flex-wrap:wrap;gap:9px}
+.cert{background:var(--elev);border:1px solid var(--line);border-radius:999px;padding:8px 14px;display:inline-flex;gap:9px;align-items:center;font-size:.88rem;transition:border-color .2s}
+.cert:hover{border-color:var(--line2)}
+.cert .ci{font-size:1rem;line-height:1}
+.cert .ct{font-weight:600}
+.cert .cs{color:var(--faint);font-size:.78rem}
+.stackchips{display:flex;flex-wrap:wrap;gap:9px}
+.schip{background:var(--elev);border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:.9rem}
+/* "en curso" = aprendizaje, nunca expertise. Se marca y se explica. */
+.schip.soon{color:var(--cool);border-style:dashed;border-color:var(--cool-line);background:var(--cool-soft)}
+.stack-note{font-size:12.5px;color:var(--faint);margin-top:14px;line-height:1.6;max-width:66ch}
+.stack-note b{color:var(--cool)}
+/* disclosure genérico para compactar bloques secundarios */
+.more{margin-top:14px}
+.more>summary{list-style:none;cursor:pointer;font-family:'JetBrains Mono';font-size:11.5px;letter-spacing:.06em;color:var(--gold);display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border:1px solid var(--line2);border-radius:999px;transition:.15s}
+.more>summary::-webkit-details-marker{display:none}
+.more>summary:hover{background:var(--gold-soft)}
+.more>summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.more>summary .ar{transition:transform .2s var(--ease)}
+.more[open]>summary .ar{transform:rotate(45deg)}
+.more[open]>summary{margin-bottom:6px}
+
+/* faq */
+.faq{max-width:840px}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-item summary{list-style:none;cursor:pointer;padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:20px;font-family:'Space Grotesk';font-size:clamp(16px,2vw,19px);font-weight:600}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary .p{color:var(--gold);font-size:22px;transition:transform .25s var(--ease);flex:none}
+.faq-item[open] summary .p{transform:rotate(45deg)}
+.faq-item .ans{color:var(--dim);font-size:15px;padding-bottom:22px;max-width:72ch}
+
+.cta-band{background:linear-gradient(120deg,var(--gold),var(--gold-hi));color:#161200;border-radius:22px;padding:clamp(40px,6vw,68px);text-align:center}
+.cta-band h2{font-size:clamp(28px,4.2vw,48px);font-weight:700;color:#161200}
+.cta-band p{color:#3a2e05;font-size:17px;margin:16px auto 28px;max-width:46ch;font-weight:500}
+.cta-band .btn.dark{background:#161200;color:var(--gold)}
+
+footer.site{border-top:1px solid var(--line);padding-block:44px 60px}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+.foot .fine{color:var(--faint);font-size:13px;max-width:52ch;line-height:1.6}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+
+/* foco visible en todo lo navegable por teclado */
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:34px}.kpis{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+@media(max-width:760px){.nav-links{display:none}.nav-toggle{display:block}.nav-links.open{display:flex;flex-direction:column;gap:4px;position:absolute;top:64px;left:0;right:0;background:var(--elev);border-bottom:1px solid var(--line);padding:14px 22px}.graph-app{flex-direction:column;height:auto}.gstage{height:340px}.gside{width:100%;border-left:none;border-top:1px solid var(--line2);max-height:300px}.statbar{max-width:48%}.deepdive>summary{padding:16px}.dd-body{padding:0 16px 16px}}
+/* móvil: KPI apiladas, workflows en vertical, nada de gráficos apretados */
+@media(max-width:560px){.kpis{grid-template-columns:1fr;gap:10px}.kpi{padding:15px 16px}.kpi .fig{font-size:30px}.imp-bars .il{flex-direction:column;gap:2px}.chat{max-height:260px}.demo-chips{gap:5px}.chart{gap:7px;height:104px}.dd-ic{display:none}}
+</style>
+</head>
+<body>
+<canvas id="bgcanvas"></canvas>
+<div class="bgfx"><span class="a"></span><span class="b"></span><span class="c"></span></div>
+
+<!-- NAV -->
+<header class="nav">
+ <div class="container">
+  <a class="brand" href="#top"><span class="mk">AU</span>Álvaro Utazu</a>
+  <nav class="nav-links" id="navLinks">
+   <a href="#proyectos">Proyectos</a><a href="#sobre">Sobre mí</a><a href="#faq">FAQ</a><a href="#contacto">Contacto</a>
+  </nav>
+  <div class="nav-actions">
+   <a class="btn pri" href="https://www.linkedin.com/in/alvaro-utazu-l%C3%A1zaro-952255291" target="_blank" rel="noopener">LinkedIn ↗</a>
+   <button class="nav-toggle" id="navToggle" aria-label="Menú">☰</button>
+  </div>
+ </div>
+</header>
+
+<main id="top">
+<!-- HERO — primero quién soy y de dónde vengo; la tecnología viene después -->
+<section class="hero"><div class="container">
+ <div class="hero-grid">
+  <div>
+   <div class="eyebrow reveal">AI Engineer · Hiperautomatización de marketing y ventas</div>
+   <h1 class="reveal" style="transition-delay:.05s">Sé dónde se pierde una venta. Y construyo la IA que <span class="g">la recupera.</span></h1>
+   <p class="lead reveal" style="transition-delay:.1s">Años captando, negociando y cerrando ventas B2B en automoción. <b style="color:var(--tx)">Desde enero de 2026 estudio, aplico y construyo agentes de IA por mi cuenta</b>, y mi especialidad es hiperautomatizar procesos de marketing y ventas: que el trabajo repetitivo lo haga un sistema y el comercial se dedique a vender. Entiendo la venta como un comercial y la construyo como un ingeniero.</p>
+   <div class="hero-cta reveal" style="transition-delay:.16s">
+    <a class="btn pri" href="#proyectos">▷ Probar los demos</a>
+    <a class="btn ghost" href="https://github.com/aulazaro28110-prog" target="_blank" rel="noopener">GitHub ↗</a>
+    <a class="btn ghost" href="#contacto">Contacto</a>
+   </div>
+  </div>
+  <div class="badgecard reveal" style="transition-delay:.12s">
+   <div class="st"><span class="d"></span>Disponible para trabajar</div>
+   <div class="who"><div class="av">AU</div><div><div class="nm">Álvaro Utazu Lázaro</div><div class="rl">AI Engineer · Automatización de marketing y ventas</div></div></div>
+   <div class="facts">
+    <div>📍 <b>Madrid, España</b> · remoto / híbrido / presencial</div>
+    <div>🚀 Construyendo IA por mi cuenta desde <b>enero de 2026</b></div>
+    <div>🛠️ Python · agentes · RAG · guardrails · datos · GDPR</div>
+    <div>🎓 <b>6</b> certificados · <b>5</b> proyectos propios</div>
+    <div>💼 Roles: AI Engineer · IA aplicada a ventas · automatización</div>
+   </div>
+  </div>
+ </div>
+ <!-- la historia en 5 segundos: de dónde salgo, qué he hecho y dónde estoy hoy -->
+ <div class="track reveal">
+  <div class="tp">
+   <div class="tw">Antes</div>
+   <div class="tt">Vendiendo, no programando</div>
+   <div class="td">Captación B2B, negociación y cierre de recambios de automoción. El lado del que casi nadie viene.</div>
+  </div>
+  <div class="tp">
+   <div class="tw">Enero 2026</div>
+   <div class="tt">Empiezo por mi cuenta</div>
+   <div class="td">Python y fundamentos primero. Después agentes, RAG y automatización — construyendo, no solo leyendo.</div>
+  </div>
+  <div class="tp now">
+   <div class="tw">Hoy</div>
+   <div class="tt">5 proyectos y un agente medido</div>
+   <div class="td">Todo abierto en GitHub, con demos que funcionan y las cifras sacadas de sus propios tests.</div>
+  </div>
+ </div>
+</div></section>
+
+<!-- KPIs — cada cifra sale de salida/calidad.json o del README del repo. Nada estimado aquí. -->
+<section class="section" style="padding-block:0 clamp(40px,6vw,72px)"><div class="container">
+ <div class="kpis">
+  <div class="kpi measured reveal">
+   <div class="fig" data-to="91.25" data-dec="2" data-suf="%">0%</div>
+   <div class="lb">Acierto@1 de VendIQ</div>
+   <div class="src">Benchmark propio: 80 consultas sobre 5.010 fichas. No es acierto en producción.</div>
+   <div class="meter"><span data-w="91.25%"></span></div>
+  </div>
+  <div class="kpi reveal" style="transition-delay:.06s">
+   <div class="fig" data-to="0" data-dec="0">0</div>
+   <div class="lb">Precios inventados</div>
+   <div class="src">En 930 conversaciones no dio un solo precio sin confirmar el coche. 536 veces lo retuvo a propósito.</div>
+   <div class="meter"><span data-w="100%"></span></div>
+  </div>
+  <div class="kpi measured reveal" style="transition-delay:.12s">
+   <div class="fig" data-to="2558" data-dec="0">0</div>
+   <div class="lb">Mensajes atendidos</div>
+   <div class="src">930 conversaciones en 7 días de tráfico. 892 se cerraron sin tocar a una persona (96%).</div>
+   <div class="meter"><span data-w="100%"></span></div>
+  </div>
+  <div class="kpi reveal" style="transition-delay:.18s">
+   <div class="fig"><span class="u">~</span><span data-to="2" data-dec="0">0</span><span class="u"> s</span></div>
+   <div class="lb">Informe de pipeline</div>
+   <div class="src">Lo que antes costaba 45-60 min de trabajo manual cada lunes.</div>
+   <div class="meter"><span data-w="96%"></span></div>
+  </div>
+ </div>
+ <div class="kpi-foot reveal">
+  <span><b>5</b> proyectos en GitHub</span><span class="sep">·</span>
+  <span><b>6</b> certificados</span><span class="sep">·</span>
+  <span style="color:var(--faint)">Medido el 26/08/2026 con <span class="mono" style="color:var(--dim)">tests/test_busqueda.py</span>. Datos sintéticos, proyecto formativo — no está en producción.</span>
+ </div>
+</div></section>
+
+<!-- PROYECTOS — el nivel 1: nombre · problema · solución · resultado · demo · código -->
+<section class="section" id="proyectos"><div class="container">
+ <div class="head-block reveal"><div class="eyebrow">// Proyectos</div><h2>Agentes y automatizaciones que he desarrollado</h2><p class="lead">Todos en Python, todos resuelven un problema concreto de una operación de ventas. <b style="color:var(--tx)">Los demos funcionan aquí mismo</b> — no hacen falta vídeos.</p></div>
+ <div class="grid" id="cardGrid"></div>
+</div></section>
+
+<!-- GRAFO — deep dive (nivel 3): plegado, y el canvas no arranca hasta abrirlo -->
+<section class="section" id="grafo" style="padding-block:0 clamp(56px,8vw,104px)"><div class="container">
+ <details class="deepdive reveal" id="ddGraph">
+  <summary>
+   <span class="dd-ic">🕸️</span>
+   <span><span class="dd-t">Explora la arquitectura</span><span class="dd-s">Grafo interactivo con los ficheros reales de cada repositorio, las técnicas que usan y el flujo de datos entre proyectos. Para quien quiera bajar al detalle.</span></span>
+   <span class="dd-p" aria-hidden="true">+</span>
+  </summary>
+  <div class="dd-body">
+   <div class="graph-app">
+    <div class="gstage">
+     <canvas id="g"></canvas>
+     <div class="gtools">
+      <div class="gsearch"><span class="ic">⌕</span><input id="q" placeholder="Buscar…" autocomplete="off" aria-label="Buscar en el grafo"></div>
+      <button class="gbtn" id="filesBtn">⊕ Mostrar ficheros</button>
+      <button class="gbtn" id="tourBtn">▷ Recorrido</button>
+      <button class="gbtn" id="fitBtn">⤢ Encajar</button>
+     </div>
+     <div class="statbar" id="statbar"></div>
+     <div class="legend" id="legend"></div>
+     <div class="zoom"><button id="zi" aria-label="Acercar">+</button><button id="zo" aria-label="Alejar">−</button><button id="zr" aria-label="Encajar">⟳</button></div>
+     <div class="tip" id="tip"></div>
+     <div class="tourbar" id="tourbar"><button id="tourPrev" aria-label="Anterior">‹</button><div class="step" id="tourStep">—</div><button id="tourNext" aria-label="Siguiente">›</button><button id="tourExit" aria-label="Salir del recorrido">✕</button></div>
+    </div>
+    <aside class="gside" id="side">
+     <div class="ins-empty" id="insEmpty"><div class="big">🕸️</div>Pulsa un <b style="color:var(--gold)">proyecto</b>, una <b style="color:#cbb98a">técnica</b> o un <b style="color:var(--dim)">fichero</b>.<br><br>O activa <b style="color:var(--gold)">"Mostrar ficheros"</b> para verlo todo.</div>
+     <div id="ins" style="display:none"></div>
+    </aside>
+   </div>
+   <p style="font-size:12px;color:var(--faint);margin-top:12px;line-height:1.6">Canvas propio, sin librerías. Las líneas <span class="gold">doradas</span> son un flujo de datos real entre proyectos: limpiar → priorizar → informar.</p>
+  </div>
+ </details>
+</div></section>
+
+<!-- SOBRE MI — la versión larga de lo que el hero cuenta en una frase -->
+<section class="section" id="sobre"><div class="container">
+ <div class="head-block reveal"><div class="eyebrow">Sobre mí</div><h2>De vender recambios a automatizar la venta</h2></div>
+ <p class="lead reveal" style="max-width:78ch;color:var(--dim)">Vengo de la venta: años captando, negociando y cerrando operaciones de recambios de automoción. De ahí sé de primera mano dónde un equipo comercial gana o pierde tiempo y dinero, y qué respuesta cierra un trato.</p>
+ <p class="lead reveal" style="max-width:78ch;color:var(--dim);margin-top:18px">En <b style="color:var(--tx)">enero de 2026</b> decidí dejar de pedir herramientas y construirlas yo. Sin bootcamp y sin equipo detrás: fundamentos de Python primero, y de ahí a agentes, RAG, guardarraíles y calidad de datos. Ocho meses después hay cinco proyectos publicados, seis certificados y un agente conversacional que se mide contra su propio banco de pruebas.</p>
+ <p class="lead reveal" style="max-width:78ch;color:var(--dim);margin-top:18px">Hacia dónde voy es concreto: <b style="color:var(--tx)">hiperautomatizar los procesos de marketing y ventas</b> — que limpiar datos, priorizar leads, contestar consultas repetidas y montar el informe del lunes lo haga un sistema, y que la persona se quede con lo que solo sabe hacer una persona: vender. Los proyectos de aquí abajo no son ejercicios sueltos; encadenados forman ese pipeline. Mido cada solución por su impacto en negocio, no por la tecnología que lleva dentro.</p>
+</div></section>
+
+<!-- EXPERIENCIA + FORMACIÓN — compactadas: el rol actual visible, el resto al expandir -->
+<section class="section" id="experiencia"><div class="container">
+ <div class="head-block reveal"><div class="eyebrow">// Trayectoria</div><h2>Experiencia y formación</h2></div>
+ <div class="card reveal" style="padding:6px 22px">
+  <div class="row"><div class="ic">🚗</div><div><div class="rt">Responsable de ventas</div><div class="rs">Recuperaciones Casal · Jornada completa</div><div class="rm">oct. 2023 – actualidad · Madrid · Presencial</div><div class="rx">Captación B2B, negociación y cierre de ventas de recambios de automoción por WhatsApp, correo y teléfono. Introduje IA en el día a día comercial (prompting y borradores con Claude) y diseñé un asistente RAG (VendIQ) sobre el catálogo real.</div></div></div>
+  <details class="more" style="margin:0 0 14px">
+   <summary><span class="ar">+</span> Puestos anteriores</summary>
+   <div class="row" style="border-top:1px solid var(--line)"><div class="ic">🔧</div><div><div class="rt">Mecánico de mantenimiento</div><div class="rs">Mercedes-Benz AG</div><div class="rm">mar. 2022 – jul. 2022 · Alcobendas, Madrid</div><div class="rx">Conocimiento práctico del sector de automoción junto a mecánicos experimentados.</div></div></div>
+   <div class="row"><div class="ic">🛍️</div><div><div class="rt">Vendedor</div><div class="rs">NeoCreate · Profesional independiente</div><div class="rm">ene. 2019 – jun. 2019 · Madrid</div></div></div>
+  </details>
+ </div>
+
+ <div class="head-block reveal" style="margin-top:44px;margin-bottom:18px"><h2 style="font-size:clamp(20px,2.6vw,28px)">Certificados <span style="color:var(--faint);font-family:'JetBrains Mono';font-size:.5em;font-weight:500">6</span></h2></div>
+ <div class="certs reveal">
+  <div class="cert"><span class="ci">⚡</span><span class="ct">Claude 101</span><span class="cs">Anthropic · may. 2026</span></div>
+  <div class="cert"><span class="ci">⚙️</span><span class="ct">Claude Code 101</span><span class="cs">Anthropic · jun. 2026</span></div>
+  <div class="cert"><span class="ci">🤝</span><span class="ct">Claude Cowork</span><span class="cs">Anthropic · jun. 2026</span></div>
+  <div class="cert"><span class="ci">🧭</span><span class="ct">AI Fluency: Framework &amp; Foundations</span><span class="cs">Anthropic · jul. 2026</span></div>
+  <div class="cert"><span class="ci">⌨️</span><span class="ct">Claude Code in Action</span><span class="cs">Anthropic · ago. 2026</span></div>
+  <div class="cert"><span class="ci">🌍</span><span class="ct">Elements of AI</span><span class="cs">U. Helsinki · jun. 2026</span></div>
+ </div>
+
+ <div class="head-block reveal" style="margin-top:40px;margin-bottom:18px"><h2 style="font-size:clamp(20px,2.6vw,28px)">Stack</h2></div>
+ <div class="stackchips reveal">
+  <span class="schip">Python</span><span class="schip">Agentes conversacionales</span><span class="schip">RAG · embeddings</span><span class="schip">Búsqueda híbrida</span><span class="schip">LLMs (Groq)</span><span class="schip">Guardrails / evaluación</span><span class="schip">Automatización de procesos</span><span class="schip">Data quality</span><span class="schip">GDPR · ética</span><span class="schip">Claude / Claude Code</span><span class="schip">Git &amp; GitHub</span><span class="schip">Ventas B2B · negociación</span><span class="schip soon">n8n / no-code</span><span class="schip soon">MCP / tool-calling</span>
+ </div>
+ <p class="stack-note reveal">Lo marcado en <b>azul y discontinuo está en curso</b>: lo estoy aprendiendo y no lo presento como experiencia consolidada. Todo lo demás tiene detrás un proyecto que puedes abrir. Precisión que conviene: he construido un <b style="color:var(--tx)">agente conversacional</b> con su máquina de estados, guardarraíles y paso a humano — lo que aún no domino es orquestarlo con <b>n8n</b> ni exponer herramientas por <b>MCP</b>.</p>
+</div></section>
+
+<!-- FAQ -->
+<section class="section" id="faq"><div class="container">
+ <div class="head-block reveal"><div class="eyebrow">// Para quien indaga</div><h2>Preguntas frecuentes</h2><p class="lead">Las que me haría un seleccionador, respondidas con transparencia.</p></div>
+ <div class="faq reveal">
+  <details class="faq-item"><summary>Dices «hiperautomatización» — ¿qué has automatizado de verdad? <span class="p">+</span></summary><div class="ans">Un pipeline comercial completo, en piezas que encajan: <b style="color:var(--tx)">limpiar</b> la base de contactos y fusionar duplicados que un humano no ve, <b style="color:var(--tx)">priorizar</b> los leads por criterios de negocio y repartirlos, y <b style="color:var(--tx)">informar</b> convirtiendo el export del CRM en el informe del lunes en un par de segundos. Encima de eso, VendIQ atiende las consultas repetidas sin que nadie las toque: en el banco de 930 conversaciones, 892 se cerraron solas. Lo que <i>no</i> tengo es eso desplegado en una empresa ni orquestado con n8n: son proyectos formativos con datos sintéticos, corriendo en local y abiertos para que los mires por dentro.</div></details>
+  <details class="faq-item"><summary>Empezaste en enero de 2026. ¿No es muy poco tiempo? <span class="p">+</span></summary><div class="ans">Son ocho meses, sí, y prefiero decirlo yo. Lo que compensa es de dónde vengo: no estoy aprendiendo a la vez el dominio y la tecnología, el dominio comercial ya lo tenía y por eso sé qué merece la pena construir. Y lo que hay es verificable: cinco repositorios abiertos, tests que fallan si rompo una regla, y métricas que salen de ficheros del propio proyecto y no de una diapositiva. Prefiero que juzgues el código antes que los meses.</div></details>
+  <details class="faq-item"><summary>¿Por qué IA viniendo de ventas? <span class="p">+</span></summary><div class="ans">Porque conozco el problema desde dentro. Sé exactamente dónde un comercial pierde el tiempo y qué respuesta hace ganar una venta. Un ingeniero sin ese contexto construye cosas técnicamente correctas que nadie usa; yo construyo lo que de verdad mueve la aguja comercial.</div></details>
+  <details class="faq-item"><summary>¿VendIQ está en producción? <span class="p">+</span></summary><div class="ans">No: es un proyecto formativo, construido y medido, aún no desplegado en una empresa. Su valor es demostrar que sé construir un agente RAG con guardarraíles, tests y cumplimiento GDPR, y explicar con criterio cada decisión técnica.</div></details>
+  <details class="faq-item"><summary>¿De dónde salen los números? <span class="p">+</span></summary><div class="ans">Sí, y sale de un fichero del propio repositorio (<span class="mono" style="color:var(--dim)">salida/calidad.json</span>), que se regenera cada vez que toco la búsqueda. Banco propio de 80 consultas sobre 5.010 fichas: <b style="color:var(--tx)">91,25%</b> de acierto en la primera respuesta y 98,75% contando las tres primeras. Dos matices que prefiero contar yo antes de que me los pregunten: las preguntas se generan del propio catálogo, así que es acierto sobre consultas limpias y no sobre mensajes reales de WhatsApp; y es una medición mía en local, no una métrica de producción. La otra cifra es distinta y conviene no mezclarlas: las <b style="color:var(--tx)">0 fugas de precio</b> salen de <span class="mono" style="color:var(--dim)">salida/actividad.json</span>, siete días de tráfico con <b style="color:var(--tx)">930 conversaciones y 2.558 mensajes</b>, donde el sistema retuvo el precio 536 veces por no tener matrícula. Los mensajes de ese banco son sintéticos; las decisiones, los tiempos y ese cero salen de ejecutar el sistema de verdad contra el catálogo. Y hay una tercera familia de números que no sale de ningún JSON sino de ejecutar el repositorio: <b style="color:var(--tx)">10 bancos de pruebas</b> que pasan o no pasan. El más duro son 50 conversaciones de más de veinte mensajes cada una —1.041 turnos—, porque los fallos de un bot conversacional no aparecen en el turno 3: aparecen en el 17, cuando ya arrastra media conversación de memoria.</div></details>
+  <details class="faq-item"><summary>¿Qué sabes hacer hoy y qué estás aprendiendo? <span class="p">+</span></summary><div class="ans"><b style="color:var(--tx)">Hoy:</b> Python, RAG y embeddings, búsqueda híbrida, agentes conversacionales con guardarraíles y paso a humano, calidad de datos, evaluación con tests, GDPR y Git — todo con proyectos que puedes abrir ahora mismo. <b style="color:var(--tx)">En curso:</b> orquestación no-code con n8n y exponer herramientas por MCP. No presento como dominado lo que aún estoy construyendo, y en el stack de arriba está marcado cuál es cuál.</div></details>
+  <details class="faq-item"><summary>¿Dónde está el código? <span class="p">+</span></summary><div class="ans">Todo en <a class="gold" href="https://github.com/aulazaro28110-prog" target="_blank" rel="noopener">github.com/aulazaro28110-prog</a>. Cuatro repos tienen el código y demos en vivo; VendIQ se está publicando. En <a class="gold" href="#grafo">Explora la arquitectura</a> puedes abrir cada proyecto y ver sus ficheros reales.</div></details>
+ </div>
+</div></section>
+
+<!-- CTA -->
+<section class="section" id="contacto"><div class="container">
+ <div class="cta-band reveal">
+  <h2>¿Hablamos?</h2>
+  <p>Busco un equipo donde convertir el cruce de ventas + IA en resultados.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+   <a class="btn dark" href="https://www.linkedin.com/in/alvaro-utazu-l%C3%A1zaro-952255291" target="_blank" rel="noopener">LinkedIn ↗</a>
+   <a class="btn dark" href="mailto:aulazaro.28110@gmail.com">aulazaro.28110@gmail.com</a>
+  </div>
+ </div>
+</div></section>
+</main>
+
+<footer class="site"><div class="container"><div class="foot">
+ <a class="brand" href="#top"><span class="mk">AU</span>Álvaro Utazu</a>
+ <p class="fine">AI Engineer · Automatización de marketing y ventas · Madrid. Hecho con HTML puro y un grafo interactivo propio, sin librerías. Alojado en GitHub Pages.</p>
+</div></div></footer>
+
+<script>
+/* ===== DATA: repos + ficheros reales + técnicas + flujo ===== */
+const GH='https://github.com/aulazaro28110-prog/';
+const REPOS=[
+ {id:'vendiq',name:'VendIQ',flag:true,tag:'Agente conversacional RAG',
+  desc:'Responde a clientes por WhatsApp y correo sobre los datos reales de un desguace: búsqueda híbrida sobre 5.010 fichas, guardarraíles que impiden dar precio sin confirmar el coche, LLM que redacta pero no decide, paso a humano y GDPR ejecutable. Al modelo no se le cree: se le audita cada mensaje, y si se sale del guion se descarta su redacción y sale el borrador determinista. 10 bancos de pruebas, uno de ellos con 50 conversaciones largas de más de 20 mensajes cada una (1.041 turnos). Medido sobre 930 conversaciones y 2.558 mensajes: 0 fugas de precio.',
+  metrics:[['0','fugas de precio en 930 conversaciones'],['91,25%','acierto@1 (banco propio)'],['10','bancos de pruebas en verde']],
+  chips:['Python','RAG','LLM (Groq)','GDPR','Tests'],demo:null,code:null,soon:true,
+  concepts:['ventas','rag','gdpr','tests'],
+  files:[{n:'01_ingesta_chunking.py',k:'py',d:'Trocea catálogo + políticas en chunks buscables.'},
+         {n:'02_embeddings.py',k:'py',d:'Convierte cada chunk en embedding (modelo local).'},
+         {n:'03_buscar.py',k:'py',d:'Búsqueda híbrida (léxica + significado) con umbral y guardarraíles.'},
+         {n:'04_ofertas.py',k:'py',d:'Motor de ofertas: acepta / contraoferta / rechaza / a mano.'},
+         {n:'05_panel_datos.py',k:'py',d:'Prepara los datos del centro de control.'},
+         {n:'06_panel.py',k:'py',d:'Servidor web del centro de control en vivo.'},
+         {n:'07_redactor.py',k:'py',d:'Motor de conversación determinista (reglas, sin LLM).'},
+         {n:'08_conversar.py',k:'py',d:'Capa LLM (Groq): solo redacta, no decide.'},
+         {n:'09_aprender.py',k:'py',d:'Bucle de aprendizaje: una persona contesta lo no resuelto.'},
+         {n:'10_simular.py',k:'py',d:'Pasa días enteros de tráfico de WhatsApp por el sistema real.'},
+         {n:'README.md',k:'md',d:'Cómo está construido: búsqueda, umbrales, medidas.'},
+         {n:'requirements.txt',k:'txt',d:'Dependencias del proyecto.'},
+         {n:'datos/',k:'dir',d:'Catálogo sintético (5.010 fichas) + políticas.'},
+         {n:'docs/',k:'dir',d:'NEGOCIO.md, GDPR.md y diseño.'},
+         {n:'panel/',k:'dir',d:'Front del centro de control.'},
+         {n:'salida/',k:'dir',d:'chunks, embeddings y métricas generadas.'},
+         {n:'scripts/',k:'dir',d:'Utilidades: auditar_datos, olvidar, generar_catalogo.'},
+         {n:'tests/',k:'dir',d:'Bancos de pruebas: búsqueda, precios, conversación.'}]},
+ {id:'leads',name:'Sistema Comercial de Leads',tag:'Validador · scoring · CRM',gh:'validador-leads-crm',
+  desc:'Convierte una lista de contactos sucia en una operación organizada: limpia, prioriza (lead scoring), reparte y hace seguimiento. Sistema de 4 fases, solo Python estándar.',
+  chips:['Python','Lead scoring','CRM','OOP'],demo:'https://aulazaro28110-prog.github.io/validador-leads-crm/',code:GH+'validador-leads-crm',
+  concepts:['ventas','python','dataq','pages'],
+  files:[{n:'lead.py',k:'py',d:'Clase Lead (OOP): puntuación, temperatura y estado.'},
+         {n:'lead_scorer.py',k:'py',d:'Prioriza prospectos por criterios de negocio.'},
+         {n:'validador.py',k:'py',d:'Limpia y valida la base de contactos.'},
+         {n:'crm.py',k:'py',d:'Seguimiento y estado de cada lead.'},
+         {n:'reparto.py',k:'py',d:'Reparte los leads en el equipo comercial.'},
+         {n:'mensajes.py',k:'py',d:'Genera el outreach personalizado desde plantillas.'},
+         {n:'conftest.py',k:'py',d:'Configuración de pytest para las pruebas.'},
+         {n:'contactos.csv',k:'csv',d:'Base de contactos de entrada (ejemplo).'},
+         {n:'equipo.csv',k:'csv',d:'Miembros del equipo para el reparto.'},
+         {n:'leads_demo.csv',k:'csv',d:'Datos de demostración.'},
+         {n:'plantilla.txt',k:'txt',d:'Plantilla del mensaje de ventas.'},
+         {n:'requirements-dev.txt',k:'txt',d:'Dependencias de desarrollo.'},
+         {n:'README.md',k:'md',d:'Descripción, uso y métricas.'},
+         {n:'LICENSE',k:'doc',d:'Licencia del proyecto.'},
+         {n:'.gitignore',k:'cfg',d:'Ficheros excluidos del control de versiones.'},
+         {n:'tests/',k:'dir',d:'Pruebas automáticas del sistema.'},
+         {n:'docs/',k:'dir',d:'Documentación del proyecto.'}]},
+ {id:'dedup',name:'Limpiador-Deduplicador',tag:'Dedup · fusión · auditoría',gh:'limpiador-deduplicador-crm',
+  desc:'Detecta duplicados aunque solo coincida email O teléfono, los fusiona en un registro maestro (union-find), deja rastro auditable e informe visual.',
+  chips:['Python','Data quality','union-find','Tests'],demo:'https://aulazaro28110-prog.github.io/limpiador-deduplicador-crm/',code:GH+'limpiador-deduplicador-crm',
+  concepts:['ventas','python','dataq','tests','pages'],
+  files:[{n:'deduplicador.py',k:'py',d:'Detecta y fusiona duplicados (union-find), aunque solo coincida email o teléfono.'},
+         {n:'conftest.py',k:'py',d:'Configuración de pytest.'},
+         {n:'leads_sucios_demo.csv',k:'csv',d:'Base de contactos "sucia" de ejemplo.'},
+         {n:'requirements-dev.txt',k:'txt',d:'Dependencias de desarrollo.'},
+         {n:'README.md',k:'md',d:'Descripción y uso.'},
+         {n:'LICENSE',k:'doc',d:'Licencia del proyecto.'},
+         {n:'.gitignore',k:'cfg',d:'Ficheros excluidos del control de versiones.'},
+         {n:'tests/',k:'dir',d:'Pruebas de deduplicación.'},
+         {n:'docs/',k:'dir',d:'Documentación del proyecto.'}]},
+ {id:'pipe',name:'Informe de Pipeline',tag:'CSV CRM → informe en 2s',gh:'informe-pipeline-ventas',
+  desc:'Convierte una exportación CSV del CRM en un informe de ventas accionable en 2 segundos: pipeline ponderado, dinero en riesgo, deals estancados y previsión.',
+  chips:['Python','Reporting','Tests'],demo:null,code:GH+'informe-pipeline-ventas',
+  concepts:['ventas','python','tests'],
+  files:[{n:'generar_informe.py',k:'py',d:'Convierte el CSV del CRM en el informe (HTML/Markdown).'},
+         {n:'generar_datos_demo.py',k:'py',d:'Genera datos de oportunidades de ejemplo.'},
+         {n:'conftest.py',k:'py',d:'Configuración de pytest.'},
+         {n:'deals.csv',k:'csv',d:'Exportación de oportunidades del CRM (entrada).'},
+         {n:'informe_semanal.html',k:'doc',d:'Informe generado (visual).'},
+         {n:'informe_semanal.md',k:'md',d:'Informe generado (Markdown).'},
+         {n:'emails_seguimiento.md',k:'md',d:'Borradores de correos de seguimiento.'},
+         {n:'RESUMEN.md',k:'md',d:'Resumen del proyecto.'},
+         {n:'README.md',k:'md',d:'Descripción y uso.'},
+         {n:'LICENSE',k:'doc',d:'Licencia del proyecto.'},
+         {n:'.gitignore',k:'cfg',d:'Ficheros excluidos del control de versiones.'},
+         {n:'tests/',k:'dir',d:'Pruebas del generador.'}]},
+ {id:'tasks',name:'Gestor de Tareas',tag:'CLI · persistencia',gh:'gestor-tareas',
+  desc:'Gestor por línea de comandos en Python puro con persistencia en fichero. Proyecto de fundamentos: donde empezó todo.',
+  chips:['Python','CLI'],demo:null,code:GH+'gestor-tareas',
+  concepts:['python'],
+  files:[{n:'tareas.py',k:'py',d:'CLI: añadir, listar, completar y borrar; persistencia en fichero.'},
+         {n:'tareas.txt',k:'txt',d:'Almacén de tareas (persistencia).'},
+         {n:'README.md',k:'md',d:'Descripción y uso.'}]},
+];
+const CONCEPTS=[
+ {id:'python',name:'Python puro',desc:'Sin dependencias externas: solo librería estándar. Fundamentos, no pegar librerías.'},
+ {id:'ventas',name:'Ventas / CRM',desc:'El dominio que conozco de primera mano.'},
+ {id:'rag',name:'RAG + LLM',desc:'Recuperar información real y redactar sin inventar. El salto técnico.'},
+ {id:'gdpr',name:'GDPR / datos',desc:'Minimización, borrado y datos personales. Diferenciador real.'},
+ {id:'tests',name:'Tests',desc:'Pruebas automáticas que fallan si se rompe una regla.'},
+ {id:'dataq',name:'Data quality',desc:'Validación, deduplicación y limpieza de datos de CRM.'},
+ {id:'pages',name:'Demo en vivo',desc:'Publicado en GitHub Pages: se abre en el navegador.'},
+];
+const FLOW=[['dedup','leads'],['leads','pipe']];
+const FOUND=[['tasks','leads']];
+const CROOT='#f4f4f5',CFLAG='#f5d06e',CREPO='#e8b84b',CFILE='#cbb98a',CCON='#a88a3a';
+
+/* detalle de negocio por repo (tiempo / coste / rentabilidad — honesto, con supuestos) */
+const DETAIL={
+ vendiq:{problema:"El WhatsApp del desguace se llena de consultas y la que tarda en contestarse es una venta perdida.",
+  solucion:"Un agente RAG que busca en el catálogo real y tiene prohibido dar un precio sin confirmar antes qué coche es.",
+  resultado:"0 fugas de precio en 930 conversaciones y 2.558 mensajes, con 96% resueltas sin tocar a una persona.",
+  funcion:"Atiende el WhatsApp de un desguace: entiende qué pieza y qué coche pide el cliente, lo busca en el catálogo real, responde al instante y —cuando hay dinero de por medio o duda— pasa la conversación a una persona.",
+  paraque:"Que ningún mensaje se quede sin contestar a tiempo y que nunca se ofrezca una pieza equivocada.",
+  ventajas:["Responde al instante, 24/7, con los datos reales de la empresa — no se los inventa.","Guardarraíles: nunca da un precio o una pieza sin confirmar el coche.","Pasa a una persona lo que tiene consecuencia económica.","Al LLM se le audita cada mensaje: si se inventa un precio, se inventa un «no» o vuelve a pedir un dato que el cliente ya dio, se descarta su redacción y sale el borrador determinista.","Medido: 0 fugas de precio en 930 conversaciones y 91,25% de acierto@1 en el banco de búsqueda."],
+  impacto:{antesL:"contestar a mano cada consulta",antesV:"horas de retraso",despuesL:"respuesta automática",despuesV:"≈ 56 ms",barw:"3%",
+   ahorro:"892 de 930 conversaciones resueltas sin una persona (96%)",coste:"libera al comercial de la atención repetitiva",roi:"responder al instante = ventas que hoy se pierden por tardar",
+   supuesto:"7 días de tráfico: 930 conversaciones y 2.558 mensajes (salida/actividad.json). Los mensajes son sintéticos; las decisiones, los tiempos y las 0 fugas de precio salen de ejecutar el sistema real contra el catálogo."}},
+ leads:{problema:"El equipo trabaja los leads por orden de llegada, no por los que de verdad van a convertir.",
+  solucion:"Limpia la lista, la puntúa con criterios de negocio y la reparte automáticamente en el equipo.",
+  resultado:"De 2-3 h de trabajo manual por lista a segundos.",
+  funcion:"Coge una lista de contactos en bruto, la limpia, puntúa qué leads son los mejores (lead scoring), los reparte en el equipo y hace seguimiento.",
+  paraque:"Que el equipo trabaje primero los leads que más van a convertir, no por orden de llegada.",
+  ventajas:["Limpia y valida 100 contactos en segundos.","Prioriza por criterios de negocio, no a ojo.","Reparte el trabajo del equipo automáticamente.","Solo Python estándar: sin dependencias ni coste de licencias."],
+  impacto:{antesL:"limpiar y priorizar 100 leads a mano",antesV:"≈ 2-3 h",despuesL:"el sistema lo hace",despuesV:"segundos",barw:"4%",
+   ahorro:"≈ 2-3 h por lista",coste:"≈ 40 €/lista",roi:"≈ 2.000 €/año (1 lista/semana)",
+   supuesto:"Estimación · supuestos: comercial a 15 €/h y 1 lista de 100 leads/semana."}},
+ dedup:{problema:"El CRM arrastra duplicados que nadie ve porque solo coincide el email, o solo el teléfono.",
+  solucion:"Union-find que los fusiona en un registro maestro y deja rastro auditable de qué se eliminó.",
+  resultado:"7 → 4 contactos en el demo de aquí al lado, sin perder información.",
+  funcion:"Encuentra los contactos duplicados que un humano no ve —aunque solo coincida el email O el teléfono—, los fusiona en un registro maestro y deja constancia de qué se eliminó.",
+  paraque:"Tener una base de clientes limpia: no llamar dos veces al mismo, no ensuciar el CRM.",
+  ventajas:["Detecta duplicados por email O teléfono, no solo los idénticos.","Fusiona sin perder información, con rastro auditable.","Informe visual de cada limpieza.","Evita errores caros: contactar dos veces, datos mezclados."],
+  impacto:{antesL:"revisar 1.000 contactos a mano",antesV:"inviable / horas",despuesL:"deduplicado automático",despuesV:"segundos",barw:"4%",
+   ahorro:"horas por base + errores evitados",coste:"evita el coste de contactar dos veces",roi:"una base limpia mejora cada campaña posterior",
+   supuesto:"Estimación cualitativa: el ahorro depende del tamaño y la suciedad de la base."}},
+ pipe:{problema:"Cada lunes se va casi una hora en montar a mano el informe de pipeline.",
+  solucion:"Un script que convierte el export CSV del CRM en pipeline ponderado, dinero en riesgo y previsión.",
+  resultado:"De 45-60 min a ≈ 2 s, y el mismo informe siempre, sin olvidos.",
+  funcion:"Convierte la exportación CSV del CRM en un informe de ventas claro: cuánto hay en juego, qué deals están en riesgo, qué se escapa y la previsión del mes.",
+  paraque:"Que el responsable tenga el estado del pipeline en 2 segundos en vez de dedicarle una hora cada lunes.",
+  ventajas:["De 45-60 min de trabajo manual a 2 segundos.","Pipeline ponderado, dinero en riesgo, deals estancados, previsión.","El mismo informe siempre, sin olvidos ni errores.","Funciona sobre cualquier export del CRM."],
+  impacto:{antesL:"escribir el informe a mano cada semana",antesV:"≈ 45-60 min",despuesL:"el script lo genera",despuesV:"≈ 2 s",barw:"5%",
+   ahorro:"≈ 50 min/semana ≈ 45 h/año",coste:"≈ 675 €/año por responsable",roi:"se paga solo la primera semana",
+   supuesto:"Base real: el README mide 45-60 min → 2 s. Coste estimado a 15 €/h."}},
+ tasks:{problema:"Necesitaba aprender Python de verdad: estructura, persistencia y decisiones documentadas.",
+  solucion:"Un gestor de tareas por línea de comandos en Python puro, sin una sola librería externa.",
+  resultado:"Mi primer proyecto. No tiene caso de negocio que medir y no me lo invento.",
+  funcion:"Un gestor de tareas por línea de comandos: añadir, listar, completar y borrar, guardando todo en un fichero para que no se pierda.",
+  paraque:"Fue mi primer proyecto: aprender Python limpio, persistencia y decisiones documentadas.",
+  ventajas:["Python puro, sin librerías.","Persistencia real en fichero.","Código sencillo y bien explicado."],
+  impacto:null},
+};
+
+/* ===== demos jugables (lógica real reimplementada) ===== */
+function esc2(s){return(s+'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+const DEMOS={
+ /* VendIQ — reimplementación en JS del motor determinista de 07_redactor.py.
+    Fichas, precios y referencias salen de datos/inventario_sintetico.csv (reales
+    del proyecto). El orden de las ramas es el del redactor: la despedida manda
+    sobre todo, y el guardarraíl de precio no se salta nunca. */
+ vendiq(el){
+  const CAT=[
+   {ref:'5487TL76D',pz:'alternador',nom:'alternador',g:'m',ma:'Audi',mo:'A4',mt:'2.0 TFSI',an:2019,es:'comprobado y funcionando',dp:'en 24-48 h',pr:'195,00 €'},
+   {ref:'7891VT72E',pz:'puerta',nom:'puerta trasera izquierda',g:'f',ma:'BMW',mo:'Serie 3',mt:'330i',an:2008,es:'desmontada de vehículo',dp:'ya, en stock',pr:'409,70 €'},
+   {ref:'3187ZK77C',pz:'puerta',nom:'puerta trasera izquierda',g:'f',ma:'BMW',mo:'Serie 3',mt:'320d',an:2012,es:'comprobada y funcionando',dp:'ya, en stock',pr:'265,81 €'},
+   {ref:'9032YL36D',pz:'capo',nom:'capó',g:'m',ma:'Audi',mo:'Q3',mt:'2.0 TDI',an:2014,es:'comprobado y funcionando',dp:'ya, en stock',pr:'339,13 €'},
+   {ref:'4840HY10D',pz:'capo',nom:'capó',g:'m',ma:'Audi',mo:'Q3',mt:'1.4 TFSI',an:2018,es:'comprobado y funcionando',dp:'ya, en stock',pr:'169,69 €'},
+   {ref:'3703WN16A',pz:'faro',nom:'faro delantero izquierdo',g:'m',ma:'Volkswagen',mo:'Golf',mt:'2.0 TDI',an:2009,es:'desmontado de vehículo',dp:'en 24-48 h',pr:'95,22 €'},
+   {ref:'9661WY91B',pz:'faro',nom:'faro delantero izquierdo',g:'m',ma:'Volkswagen',mo:'Golf',mt:'1.4 TSI',an:2016,es:'desmontado de vehículo',dp:'ya, en stock',pr:'128,28 €'},
+   {ref:'5277LV38D',pz:'radiador',nom:'radiador',g:'m',ma:'Seat',mo:'León',mt:'2.0 TDI',an:2005,es:'comprobado y funcionando',dp:'ya, en stock',pr:'80,74 €'},
+   {ref:'1542EX86D',pz:'parachoques',nom:'parachoques trasero',g:'m',ma:'Renault',mo:'Clio',mt:'1.2 16v',an:2018,es:'desmontado de vehículo',dp:'en 24-48 h',pr:'94,75 €'},
+   {ref:'7263QT24D',pz:'parachoques',nom:'parachoques trasero',g:'m',ma:'Renault',mo:'Clio',mt:'1.2 16v',an:2008,es:'comprobado y funcionando',dp:'ya, en stock',pr:'109,44 €'}
+  ];
+  /* La matrícula del guion precargado resuelve a su ficha real, igual que en el sistema. */
+  const PLACAS={'4521KBD':'5487TL76D'};
+  const PIEZAS=[['alternador','alternador','m'],['puerta','puerta','f'],['capo','capó','m'],
+   ['faro','faro','m'],['radiador','radiador','m'],['parachoques','parachoques','m'],
+   ['motor','motor','m'],['turbo','turbo','m'],['pastillas','pastillas de freno','f'],['embrague','embrague','m'],
+   ['centralita','centralita','f'],['retrovisor','retrovisor','m'],['amortiguador','amortiguador','m'],
+   ['aceite','aceite','m'],['bomba','bomba','f'],['disco','disco de freno','m'],['aleta','aleta','f']];
+  const MARCAS={audi:'Audi',bmw:'BMW',seat:'Seat',volkswagen:'Volkswagen',vw:'Volkswagen',renault:'Renault',
+   ford:'Ford',mercedes:'Mercedes-Benz',opel:'Opel',peugeot:'Peugeot',citroen:'Citroën',nissan:'Nissan',toyota:'Toyota'};
+  const MODELOS={a4:'A4',a3:'A3',q3:'Q3',golf:'Golf',polo:'Polo',leon:'León',ibiza:'Ibiza',ateca:'Ateca',
+   clio:'Clio',megane:'Mégane',passat:'Passat',focus:'Focus',qashqai:'Qashqai','serie 3':'Serie 3','clase a':'Clase A'};
+  /* Cada modelo lleva su marca: decir "Golf" ya identifica un Volkswagen. */
+  const MO_MA={a4:'Audi',a3:'Audi',q3:'Audi',golf:'Volkswagen',polo:'Volkswagen',passat:'Volkswagen',
+   leon:'Seat',ibiza:'Seat',ateca:'Seat',clio:'Renault',megane:'Renault',focus:'Ford',
+   qashqai:'Nissan','serie 3':'BMW','clase a':'Mercedes-Benz'};
+  const RE_PLACA=/\b(\d{4})\s*-?\s*([a-z]{3})\b/;
+  const RE_REF=/\b(\d{4}[a-z]{2}\d{2}[a-z])\b/;
+
+  const S={presentado:false,ma:null,mo:null,placa:null,ficha:null,pzPend:null,estado:'abierta',garantia:false,varia:0};
+
+  el.innerHTML=
+   "<span class='demo-src'>Transcripción real · salida/frio.txt</span>"+
+   "<div class='demo-hint'>Los tres primeros turnos son una <b>ejecución real del bot</b>, copiada tal cual del banco de pruebas. Sigue tú desde donde lo dejó — fíjate en que <b>no suelta un precio sin saber qué coche es</b>.</div>"+
+   "<div class='demo-chips'><span class='demo-chip'>vale, apártamelo</span><span class='demo-chip'>¿me lo dejas en 150?</span><span class='demo-chip'>un faro para un Golf</span><span class='demo-chip'>¿lleva IVA?</span><span class='demo-chip'>adiós</span></div>"+
+   "<div class='chat'></div><div class='chat-in'><input placeholder='Escribe como un cliente…' aria-label='Mensaje para VendIQ'><button aria-label='Enviar'>➤</button></div>";
+  const chat=el.querySelector('.chat'),inp=el.querySelector('input'),btn=el.querySelector('button');
+
+  function norm(s){return (s+'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+  function art(g){return g==='f'?'la':'el';}
+  function pron(g){return g==='f'?'la':'lo';}
+  function varia(op){return op[(S.varia++)%op.length];}
+  function addMsg(t,who,rule,anim){
+   const m=document.createElement('div');m.className='m '+who+(anim?' in':'');m.textContent=t;chat.appendChild(m);
+   if(rule){const r=document.createElement('div');r.className='rule';r.textContent=rule;chat.appendChild(r);}
+   chat.scrollTop=chat.scrollHeight;}
+
+  function describir(f,via){
+   const g=f.g,l=[];
+   const cab=(via==='ref'?'Con esa referencia te ':'Con la matrícula te ');
+   l.push(cab+pron(g)+' confirmo: tengo '+art(g)+' '+f.nom+' de un '+f.ma+' '+f.mo+' '+f.mt+' del '+f.an+', '+f.es+'.'+(S.garantia?'':' Como todos nuestros productos, con un año de garantía.'));
+   S.garantia=true;
+   l.push('Son '+f.pr+' + IVA y '+pron(g)+' tengo '+f.dp+'.');
+   l.push('¿Te '+pron(g)+' aparto?');
+   return l.join('\n');}
+
+  function elegir(cands,semilla){
+   let h=0;for(let i=0;i<semilla.length;i++)h=(h*31+semilla.charCodeAt(i))>>>0;
+   return cands[h%cands.length];}
+
+  function noDisponible(pz){
+   return 'Lo siento, no tengo '+pz.nom+' en el catálogo ahora mismo. ¿Te aviso si entra, o miramos otra pieza?';}
+
+  /* El redactor, rama a rama y en el mismo orden que 07_redactor.py */
+  function reply(txt){
+   const t=norm(txt);
+   const mPlaca=t.match(RE_PLACA),mRef=t.match(RE_REF);
+   /* El coche que trae ESTE mensaje. Nombrar un modelo implica su marca: sin esto,
+      "un faro para un Golf" heredaba el Audi anterior y salia un "Audi Golf".
+      Y si el coche cambia, la matricula y la ficha de antes ya no valen. */
+   let nMa=null,nMo=null;
+   for(const k in MARCAS){if(new RegExp('\\b'+k+'\\b').test(t))nMa=MARCAS[k];}
+   for(const k in MODELOS){if(new RegExp('\\b'+k+'\\b').test(t)){nMo=MODELOS[k];if(MO_MA[k])nMa=MO_MA[k];}}
+   const cambiaCoche=(nMo&&nMo!==S.mo)||(nMa&&nMa!==S.ma);
+   if(nMo){S.mo=nMo;if(nMa)S.ma=nMa;}
+   else if(nMa&&nMa!==S.ma){S.ma=nMa;S.mo=null;}
+   if(cambiaCoche){S.placa=null;S.ficha=null;S.estado='abierta';}
+   let pz=null;
+   for(let i=0;i<PIEZAS.length;i++){if(t.indexOf(PIEZAS[i][0])!==-1){pz={k:PIEZAS[i][0],nom:PIEZAS[i][1],g:PIEZAS[i][2]};break;}}
+   const hayPiezaNueva=!!pz;
+
+   /* 1 · DESPEDIDA. Va delante de todo: a quien se va no se le pide un dato más. */
+   if(/\b(adios|hasta luego|hasta otra|hasta pronto|me voy|nos vemos|un saludo|chao)\b/.test(t)){
+    if(S.estado==='cerrada')return['¡Perfecto! Cualquier cosa me dices. 👍','despedida con la venta hecha: se cierra sin repetir el pedido ni pedir ningún dato'];
+    if(S.ficha)return['Hasta luego. Te dejo apuntad'+(S.ficha.g==='f'?'a':'o')+' '+art(S.ficha.g)+' '+S.ficha.nom+' por si '+pron(S.ficha.g)+' quieres más adelante.','despedida con una pieza sobre la mesa: se cierra sin presionar y sin volver a pedir datos ya dados'];
+    return['Hasta luego, aquí estamos cuando lo necesites.','despedida: el cliente se va y no se le pide ningún dato más'];}
+
+   /* 2 · VENTA CERRADA y no llega pieza nueva: se acusa corto y NO se reabre. */
+   if(S.estado==='cerrada'&&!hayPiezaNueva&&!/iva|garantia|envi|plazo|canarias|pago|factura/.test(t)){
+    return[varia(['¡Perfecto! Cualquier cosa me dices. 👍','Genial, queda todo apuntado por aquí.','Hecho. Si te surge algo, aquí estoy.']),
+     'venta cerrada: no se reidentifica ni se re-ofrece lo ya vendido'];}
+
+   /* 3 · POLÍTICAS */
+   if(/\biva\b/.test(t))return['Los precios que te paso son sin IVA, se añade siempre al final. '+(S.ficha?('El '+S.ficha.nom+' serían '+S.ficha.pr+' + IVA. ¿Te '+pron(S.ficha.g)+' aparto?'):'¿De qué pieza hablamos?'),null];
+   if(/garantia/.test(t))return['Todas las piezas llevan un año de garantía, nuevas o desmontadas. Solo hace falta guardar la factura. ¿Sigo con la pieza?',null];
+   if(/canarias|baleares|ceuta|melilla/.test(t))return['A Canarias, Baleares, Ceuta y Melilla el transporte se consulta aparte: te lo confirma una persona. A península enviamos en 24-48 h.',null];
+   if(/envi|plazo|cuando llega|cuanto tarda/.test(t))return['Enviamos a toda la península en 24-48 h y lo que está en stock sale al día siguiente. También puedes recogerlo en El Casar. ¿Te lo preparo?',null];
+   if(/bizum|transferencia|ya te he pagado|ya te pague|he pagado/.test(t))return['El cobro no lo confirmo yo: te lo verifica una persona antes de que salga nada. Se lo paso ahora a Álvaro.','pago: tiene consecuencia económica, se escala a una persona y el bot no lo da por hecho'];
+
+   /* 4 · REGATEO. No se baja el margen: se cede transporte y el ajuste lo decide una persona. */
+   if(S.ficha&&/rebaja|descuento|mas barato|me lo dejas|me la dejas|precio final|ultimo precio|\b\d{2,4}\s*(€|euros)\b/.test(t)){
+    const g=S.ficha.g;
+    return['Sobre el precio no puedo hacer maravillas, pero si te '+pron(g)+' llevas te '+pron(g)+' bajo sin coste al taller.\nCualquier ajuste te lo tiene que decir Álvaro, se lo paso ahora.',
+     'guardarraíl de precio: el bot no negocia el importe, cede transporte y escala el descuento'];}
+
+   /* 5 · ACEPTA la oferta que hay sobre la mesa. */
+   if(S.ficha&&S.estado!=='cerrada'&&/\b(vale|si|sale|venga|de acuerdo|perfecto|ok|okey|apart[a-z]*|me la quedo|me lo quedo|la quiero|lo quiero|adelante|hecho)\b/.test(t)){
+    S.estado='cerrada';
+    return['Hecho, '+pron(S.ficha.g)+' aparto a tu nombre.\nAntes de que salga comprobamos que encaja con tu coche. ¿Te '+pron(S.ficha.g)+' mandamos al taller o te pasas tú a por él?',null];}
+
+   /* 6 · REFERENCIA EXACTA: identifica sola, no hace falta matrícula. */
+   if(mRef){
+    const f=CAT.filter(function(c){return c.ref.toLowerCase()===mRef[1];})[0];
+    if(f){S.ficha=f;S.pzPend=null;S.ma=f.ma;S.mo=f.mo;return[describir(f,'ref'),null];}
+    return['Esa referencia no me aparece en el catálogo. Pásame la matrícula y qué pieza buscas y te digo qué monta el tuyo.','no se inventa una ficha que no existe: se pide el dato que falta'];}
+
+   /* 7 · MATRÍCULA: es lo que desbloquea el precio. */
+   if(mPlaca){
+    S.placa=(mPlaca[1]+mPlaca[2]).toUpperCase();
+    const pend=S.pzPend||(S.ficha?{k:S.ficha.pz,nom:S.ficha.nom,g:S.ficha.g}:null);
+    if(!pend)return['Apuntada la matrícula. ¿Qué pieza necesitas?',null];
+    if(PLACAS[S.placa]){
+     const fx=CAT.filter(function(c){return c.ref===PLACAS[S.placa];})[0];
+     if(fx&&fx.pz===pend.k){S.ficha=fx;S.pzPend=null;return[describir(fx),null];}}
+    let cands=CAT.filter(function(c){return c.pz===pend.k;});
+    if(S.ma){const f2=cands.filter(function(c){return norm(c.ma)===norm(S.ma);});if(f2.length)cands=f2;}
+    if(!cands.length)return[noDisponible(pend),'no disponible: no se ofrece una pieza que no está en el catálogo'];
+    const f=elegir(cands,S.placa);S.ficha=f;S.pzPend=null;return[describir(f),null];}
+
+   /* 8 · PIEZA. Aquí vive el guardarraíl: sin coche identificado no hay precio. */
+   if(pz){
+    const cands=CAT.filter(function(c){return c.pz===pz.k;});
+    if(!cands.length){S.pzPend=null;S.ficha=null;return[noDisponible(pz),'no disponible: el catálogo no la tiene y el bot no la inventa'];}
+    S.pzPend=pz;S.ficha=null;
+    if(!(S.ma&&S.mo))return['De '+pz.nom+' tengo, pero depende del coche.\nDime marca y modelo (o pásame la matrícula) y te digo cuál te vale.',
+     'guardarraíl: sin marca y modelo no se ofrece ficha ni precio'];
+    const nCoche=cands.filter(function(c){return norm(c.ma)===norm(S.ma)&&norm(c.mo)===norm(S.mo);}).length;
+    if(!nCoche)return['Lo siento, no tengo '+pz.nom+' para un '+S.ma+' '+S.mo+'. ¿Miramos otra pieza o te aviso si entra?',
+     'no disponible para ese coche: no se ofrece un encaje sin confirmar'];
+    return['De '+pz.nom+' para un '+S.ma+' '+S.mo+' tengo '+(nCoche===1?'una':nCoche+' referencias distintas')+', pero tiene que cuadrarte el motor y el año.\nPásame la matrícula y te digo cuál es el tuyo y lo que vale.',
+     'guardarraíl de precio: hay coche pero no identificación, así que no se da importe'];}
+
+   /* 9 · SALUDO. La presentación sale una sola vez por conversación. */
+   if(/\b(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|que tal)\b/.test(t)){
+    if(!S.presentado){S.presentado=true;
+     return['¡Hola! Soy el asistente de Recuperaciones Casal, encantado de ayudarte.\n¿Qué pieza necesitas y para qué coche?',
+      'cliente nuevo: se identifica como asistente en el primer mensaje, no finge ser una persona'];}
+    return['¿Qué pieza necesitas y para qué coche?',null];}
+
+   /* 10 · lo que no encaja en ninguna rama */
+   return['Dime qué pieza buscas y para qué coche, y te digo si la tengo.',null];}
+
+  function send(v){v=(v||'').trim();if(!v)return;
+   addMsg(v,'u',null,true);inp.value='';
+   const r=reply(v);
+   setTimeout(function(){addMsg(r[0],'b',r[1],true);},280);}
+  el.querySelectorAll('.demo-chip').forEach(function(c){c.onclick=function(){send(c.textContent);};});
+  btn.onclick=function(){send(inp.value);};
+  inp.onkeydown=function(e){if(e.key==='Enter')send(inp.value);};
+
+  /* Guion precargado: conversación 50 del banco en frío, literal. */
+  const GUION=[
+   ['u','Buenos días',null],
+   ['b','¡Hola! Soy el asistente de Recuperaciones Casal, encantado de ayudarte.\n¿Qué pieza necesitas y para qué coche?','cliente nuevo: se identifica como asistente en el primer mensaje'],
+   ['u','busco un alternador para un Audi A4',null],
+   ['b','De alternador para un Audi A4 tengo una, pero tiene que cuadrarte el motor y el año.\nPásame la matrícula y te digo cuál es el tuyo y lo que vale.','guardarraíl de precio: hay coche pero no identificación, así que no se da importe'],
+   ['u','matrícula 4521 KBD',null],
+   ['b','Con la matrícula te lo confirmo: tengo el alternador de un Audi A4 2.0 TFSI del 2019, comprobado y funcionando. Como todos nuestros productos, con un año de garantía.\nSon 195,00 € + IVA y lo tengo en 24-48 h.\n¿Te lo aparto?',null]
+  ];
+  GUION.forEach(function(m){addMsg(m[1],m[0],m[2],false);});
+  const sep=document.createElement('div');sep.className='sep';sep.textContent='sigue tú desde aquí';chat.appendChild(sep);
+  /* el estado queda donde lo dejó el guion: coche identificado y ficha sobre la mesa */
+  S.presentado=true;S.ma='Audi';S.mo='A4';S.placa='4521KBD';S.garantia=true;
+  S.ficha=CAT.filter(function(c){return c.ref==='5487TL76D';})[0];
+  chat.scrollTop=chat.scrollHeight;},
+
+ /* En reposo ya se ven los 6 leads sin puntuar: el botón los ordena, no los crea.
+    Así nadie se encuentra una caja vacía esperando un clic. */
+ leads(el){const base=[{n:'García SL',em:1,ph:1,sz:3,ac:1},{n:'Talleres Ríos',em:1,ph:0,sz:2,ac:1},{n:'Motor Center',em:0,ph:1,sz:1,ac:0},{n:'Auto Vega',em:1,ph:1,sz:2,ac:0},{n:'RecambiosYA',em:1,ph:1,sz:3,ac:1},{n:'Chatarra Sur',em:0,ph:1,sz:1,ac:0}];
+  el.innerHTML="<div class='demo-hint'>6 leads sin ordenar, como salen del formulario. <b>Puntúa</b> para ver el criterio de negocio: email, teléfono, tamaño y actividad reciente.</div><button class='demo-run'>▶ Puntuar y priorizar</button><div class='drows demo-idle' style='margin-top:12px'></div>";
+  const rows=el.querySelector('.drows');
+  rows.innerHTML=base.map(function(l){
+   return "<div class='drow'><span class='nm'>"+esc2(l.n)+"</span><span class='dmini'><span></span></span><span class='sc' style='color:var(--faint)'>—</span><span class='tmp cold'>sin puntuar</span></div>";}).join('');
+  el.querySelector('.demo-run').onclick=()=>{
+   rows.classList.add('live');
+   const sc=base.map(l=>({n:l.n,s:(l.em?15:0)+(l.ph?10:0)+l.sz*12+(l.ac?20:0)})).sort((a,b)=>b.s-a.s);
+   const mx=Math.max.apply(null,sc.map(x=>x.s));
+   rows.innerHTML=sc.map(l=>{const t=l.s>=60?'hot':(l.s>=45?'warm':'cold'),tl=t==='hot'?'caliente':(t==='warm'?'templado':'frío');
+    return "<div class='drow'><span class='nm'>"+esc2(l.n)+"</span><span class='dmini'><span data-w='"+Math.round(l.s/mx*100)+"%'></span></span><span class='sc' style='color:var(--gold)'>"+l.s+"</span><span class='tmp "+t+"'>"+tl+"</span></div>";}).join('');
+   rows.querySelectorAll('.dmini span').forEach(s=>requestAnimationFrame(()=>requestAnimationFrame(()=>s.style.width=s.dataset.w)));};},
+
+ dedup(el){const data=[{id:1,n:'García SL',em:'garcia@sl.com',ph:'600111222'},{id:2,n:'Garcia S.L.',em:'garcia@sl.com',ph:'600999888'},{id:3,n:'Talleres Ríos',em:'info@rios.es',ph:'611222333'},{id:4,n:'T. Rios',em:'otro@rios.es',ph:'611222333'},{id:5,n:'Motor Center',em:'m@center.com',ph:'622000111'},{id:6,n:'Auto Vega',em:'v@vega.com',ph:'633444555'},{id:7,n:'AutoVega',em:'v@vega.com',ph:'633444555'}];
+  el.innerHTML="<div class='demo-hint'>7 contactos, algunos duplicados por email <b>o</b> teléfono.</div><button class='demo-run'>▶ Deduplicar</button><div class='drows' style='margin-top:12px'></div><div class='dresult'></div>";
+  const rows=el.querySelector('.drows'),res=el.querySelector('.dresult');
+  function paint(gone){rows.innerHTML=data.map(c=>"<div class='drow"+(gone&&gone.has(c.id)?' gone':'')+"'><span class='nm'>"+esc2(c.n)+"</span><span style='color:var(--faint);font-size:10px'>"+c.em+" · "+c.ph+"</span></div>").join('');}
+  paint();
+  el.querySelector('.demo-run').onclick=()=>{const par={};data.forEach(c=>par[c.id]=c.id);function find(x){return par[x]===x?x:(par[x]=find(par[x]));}
+   for(let i=0;i<data.length;i++)for(let j=i+1;j<data.length;j++)if(data[i].em===data[j].em||data[i].ph===data[j].ph)par[find(data[i].id)]=find(data[j].id);
+   const roots={};data.forEach(c=>{const r=find(c.id);(roots[r]=roots[r]||[]).push(c.id);});
+   const gone=new Set();Object.keys(roots).forEach(r=>roots[r].slice(1).forEach(id=>gone.add(id)));
+   paint(gone);res.innerHTML="Resultado: <b>"+data.length+" → "+(data.length-gone.size)+"</b> ("+gone.size+" duplicados fusionados que un humano no ve).";};},
+
+ /* En reposo se ve el CSV de entrada y el esqueleto del gráfico: el botón lo
+    rellena. Nada de un rectángulo negro con un botón encima. */
+ pipe(el){const deals=[{s:'Prospección',v:12000},{s:'Propuesta',v:28000},{s:'Negociación',v:18000},{s:'Cierre',v:9000}];
+  el.innerHTML="<div class='demo-hint'>Entra <b>deals.csv</b> del CRM (4 etapas, 67k € en juego). Sale el informe que antes se escribía a mano cada lunes.</div><button class='demo-run'>▶ Generar informe</button><div class='chart idle demo-idle' style='margin-top:12px'></div><div class='imp-tiles' style='display:none;margin-top:12px'></div>";
+  const ch=el.querySelector('.chart'),tiles=el.querySelector('.imp-tiles');
+  ch.innerHTML=deals.map(function(d){return "<div class='bar'><span class='vv' style='color:var(--faint)'>—</span><div class='fill' style='height:14%'></div><span class='lb'>"+d.s+"</span></div>";}).join('');
+  el.querySelector('.demo-run').onclick=()=>{const total=deals.reduce((s,d)=>s+d.v,0),mx=Math.max.apply(null,deals.map(d=>d.v));
+   ch.classList.remove('idle');ch.classList.add('live');tiles.style.display='grid';
+   ch.innerHTML=deals.map(d=>"<div class='bar'><span class='vv'>"+(d.v/1000)+"k</span><div class='fill' data-h='"+Math.round(d.v/mx*100)+"%'></div><span class='lb'>"+d.s+"</span></div>").join('');
+   ch.querySelectorAll('.fill').forEach(f=>requestAnimationFrame(()=>requestAnimationFrame(()=>f.style.height=f.dataset.h)));
+   tiles.innerHTML="<div class='imp-tile'><div class='v'>"+(total/1000)+"k €</div><div class='l'>Pipeline total</div></div><div class='imp-tile'><div class='v'>14k €</div><div class='l'>En riesgo</div></div><div class='imp-tile'><div class='v'>≈ 2 s</div><div class='l'>vs 45-60 min</div></div>";};},
+
+ tasks(el){let items=[{t:'Llamar a García SL',d:false},{t:'Enviar presupuesto a Talleres Ríos',d:true},{t:'Actualizar el CRM',d:false}];
+  el.innerHTML="<div class='demo-hint'>Demo <b>real</b>: añade, completa y borra tareas.</div><div class='tlist'></div><div class='chat-in'><input placeholder='Nueva tarea…'><button>+</button></div>";
+  const list=el.querySelector('.tlist'),inp=el.querySelector('input'),btn=el.querySelector('button');
+  function render(){list.innerHTML=items.map((it,i)=>"<div class='titem"+(it.d?' done':'')+"'><span class='ck' data-i='"+i+"'>"+(it.d?'✓':'')+"</span><span class='tx'>"+esc2(it.t)+"</span><span class='del' data-d='"+i+"'>✕</span></div>").join('');
+   list.querySelectorAll('.ck').forEach(c=>c.onclick=()=>{items[+c.dataset.i].d=!items[+c.dataset.i].d;render();});
+   list.querySelectorAll('.del').forEach(c=>c.onclick=()=>{items.splice(+c.dataset.d,1);render();});}
+  function addT(){const v=inp.value.trim();if(!v)return;items.push({t:v,d:false});inp.value='';render();}
+  btn.onclick=addT;inp.onkeydown=e=>{if(e.key==='Enter')addT();};render();},
+};
+
+/* ===== Esquemas de arquitectura · un generador para los cinco =====
+   Misma retícula y mismo lenguaje visual en todos: fila de nodos, el camino
+   malo en gris punteado abajo a la izquierda, el resultado medido abajo a la
+   derecha. Geometría compacta: viewBox 1240x292 (el original medía 560, esto
+   es poco más de la mitad de alto).
+
+   Los iconos se copian en sus coordenadas originales y se recolocan con un
+   transform, así que el dibujo no se retoca a mano: solo se reubica. */
+const ESQ_G={x0:34,xn:1056,w:150,yBox:28,hBox:116,yIc:68,yTit:108,ySub:123,
+             yLin:86,yFle:77,yCo1:162,yCo2:176,yRow:194,hRow:78,sIc:.74};
+
+/* icono -> {x: centro X en el dibujo original, m: markup literal} */
+const ESQ_IC={
+ chat:{x:109,m:"<g stroke='#968f7e' stroke-width='2' fill='none'><path d='M79 178 h60 a8 8 0 0 1 8 8 v26 a8 8 0 0 1 -8 8 h-40 l-12 12 v-12 h-8 a8 8 0 0 1 -8 -8 v-26 a8 8 0 0 1 8 -8 z'/><line x1='90' y1='192' x2='132' y2='192' stroke='#7d7768'/><line x1='90' y1='202' x2='120' y2='202' stroke='#7d7768'/></g>"},
+ lupa:{x:315,m:"<g fill='#5a4c25'><circle cx='286' cy='180' r='2.4'/><circle cx='300' cy='180' r='2.4'/><circle cx='314' cy='180' r='2.4'/><circle cx='328' cy='180' r='2.4'/><circle cx='286' cy='194' r='2.4'/><circle cx='300' cy='194' r='2.4'/><circle cx='342' cy='180' r='2.4'/><circle cx='286' cy='208' r='2.4'/><circle cx='300' cy='208' r='2.4'/><circle cx='314' cy='208' r='2.4'/></g><circle cx='322' cy='198' r='3.2' fill='#e8b84b'/><circle cx='308' cy='194' r='3.2' fill='#e8b84b'/><g stroke='#e8b84b' stroke-width='2.4' fill='none'><circle cx='322' cy='197' r='12'/><line x1='331' y1='206' x2='340' y2='215'/></g>"},
+ fichas:{x:521,m:"<g><rect x='498' y='200' width='46' height='14' rx='3' fill='none' stroke='#5a4c25' stroke-width='1.6'/><rect x='502' y='192' width='46' height='14' rx='3' fill='none' stroke='#5a4c25' stroke-width='1.6'/><rect x='506' y='178' width='46' height='16' rx='3' fill='#e8b84b' opacity='.16' stroke='#e8b84b' stroke-width='2'/><line x1='512' y1='186' x2='536' y2='186' stroke='#e8b84b' stroke-width='2'/></g>"},
+ bifurca:{x:727,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><line x1='694' y1='197' x2='712' y2='197'/><line x1='712' y1='197' x2='726' y2='184'/><line x1='712' y1='197' x2='726' y2='197'/><line x1='712' y1='197' x2='726' y2='210'/><circle cx='694' cy='197' r='2.6' fill='#e8b84b' stroke='none'/><circle cx='729' cy='184' r='2.4' fill='#e8b84b' stroke='none'/><circle cx='729' cy='197' r='2.4' fill='#e8b84b' stroke='none'/><circle cx='729' cy='210' r='2.4' fill='#e8b84b' stroke='none'/></g><g stroke='#82b6d0' stroke-width='1.8' fill='none'><rect x='742' y='192' width='16' height='13' rx='2.5'/><path d='M745 192 v-4 a5 5 0 0 1 10 0 v4'/></g>"},
+ chatOut:{x:933,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><path d='M908 178 h50 a8 8 0 0 1 8 8 v22 a8 8 0 0 1 -8 8 h-30 l-11 11 v-11 h-9 a8 8 0 0 1 -8 -8 v-22 a8 8 0 0 1 8 -8 z'/><line x1='918' y1='190' x2='956' y2='190' stroke='#b98f34'/><line x1='918' y1='200' x2='944' y2='200' stroke='#b98f34'/></g>"},
+ check:{x:1139,m:"<g stroke='#e8b84b' stroke-width='2.6' fill='none'><circle cx='1139' cy='196' r='18'/><path d='M1130 196 l6 6 l12 -13'/></g>"},
+ docSucio:{x:109,m:"<g stroke='#968f7e' stroke-width='2' fill='none'><path d='M92 172 h34 l10 10 v36 a4 4 0 0 1 -4 4 h-40 a4 4 0 0 1 -4 -4 v-42 a4 4 0 0 1 4 -4 z'/><line x1='98' y1='192' x2='126' y2='192' stroke='#7d7768'/><line x1='98' y1='201' x2='120' y2='201' stroke='#8a4a4a'/><line x1='98' y1='210' x2='128' y2='210' stroke='#7d7768'/></g>"},
+ embudo:{x:315,m:"<g stroke='#e8b84b' stroke-width='2.2' fill='none'><polygon points='295,178 335,178 319,198 319,214 311,220 311,198' fill='#e8b84b' fill-opacity='.12'/></g>"},
+ barras3:{x:521,m:"<g><rect x='500' y='205' width='12' height='14' fill='#5a4c25'/><rect x='515' y='196' width='12' height='23' fill='#8a6f2e'/><rect x='530' y='182' width='12' height='37' fill='#e8b84b'/></g>"},
+ hub:{x:727,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><line x1='727' y1='198' x2='705' y2='184'/><line x1='727' y1='198' x2='749' y2='184'/><line x1='727' y1='198' x2='705' y2='212'/><line x1='727' y1='198' x2='749' y2='212'/><circle cx='727' cy='198' r='4.5' fill='#e8b84b' stroke='none'/><circle cx='702' cy='182' r='3' fill='#8a6f2e' stroke='none'/><circle cx='752' cy='182' r='3' fill='#8a6f2e' stroke='none'/><circle cx='702' cy='214' r='3' fill='#8a6f2e' stroke='none'/><circle cx='752' cy='214' r='3' fill='#8a6f2e' stroke='none'/></g>"},
+ checklist:{x:933,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><path d='M905 184 l4 4 l7 -8'/><line x1='922' y1='185' x2='960' y2='185' stroke='#b98f34'/><path d='M905 198 l4 4 l7 -8'/><line x1='922' y1='199' x2='954' y2='199' stroke='#b98f34'/><path d='M905 212 l4 4 l7 -8'/><line x1='922' y1='213' x2='958' y2='213' stroke='#b98f34'/></g>"},
+ engranaje:{x:315,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><circle cx='315' cy='197' r='11'/><circle cx='315' cy='197' r='4'/><line x1='315' y1='181' x2='315' y2='186'/><line x1='315' y1='208' x2='315' y2='213'/><line x1='299' y1='197' x2='304' y2='197'/><line x1='326' y1='197' x2='331' y2='197'/><line x1='304' y1='186' x2='307' y2='189'/><line x1='323' y1='205' x2='326' y2='208'/><line x1='326' y1='186' x2='323' y2='189'/><line x1='307' y1='205' x2='304' y2='208'/></g>"},
+ venn:{x:521,m:"<circle cx='513' cy='197' r='14' fill='#e8b84b' fill-opacity='.10' stroke='#e8b84b' stroke-width='2'/><circle cx='529' cy='197' r='14' fill='#e8b84b' fill-opacity='.10' stroke='#e8b84b' stroke-width='2'/>"},
+ merge:{x:727,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><path d='M705 184 L722 197'/><path d='M705 197 L722 197'/><path d='M705 210 L722 197'/><line x1='722' y1='197' x2='749' y2='197' marker-end='url(#{P}-ar)'/><circle cx='705' cy='184' r='2.6' fill='#8a6f2e' stroke='none'/><circle cx='705' cy='197' r='2.6' fill='#8a6f2e' stroke='none'/><circle cx='705' cy='210' r='2.6' fill='#8a6f2e' stroke='none'/></g>"},
+ escudo:{x:933,m:"<path d='M933 180 l16 5 v12 c0 11 -8 18 -16 22 c-8 -4 -16 -11 -16 -22 v-12 z' fill='#e8b84b' fill-opacity='.08' stroke='#e8b84b' stroke-width='2'/><path d='M925 199 l5 5 l10 -11' fill='none' stroke='#e8b84b' stroke-width='2.4'/>"},
+ docTabla:{x:109,m:"<g stroke='#968f7e' stroke-width='1.8' fill='none'><rect x='90' y='174' width='44' height='46' rx='3'/><line x1='90' y1='187' x2='134' y2='187'/><line x1='112' y1='174' x2='112' y2='220'/><line x1='90' y1='203' x2='134' y2='203'/></g>"},
+ ojo:{x:315,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><path d='M298 197 q17 -15 34 0 q-17 15 -34 0 z'/><circle cx='315' cy='197' r='4.5' fill='#e8b84b' stroke='none'/></g>"},
+ barras4:{x:521,m:"<g><rect x='498' y='203' width='10' height='16' fill='#5a4c25'/><rect x='511' y='192' width='10' height='27' fill='#8a6f2e'/><rect x='524' y='198' width='10' height='21' fill='#8a6f2e'/><rect x='537' y='184' width='10' height='35' fill='#e8b84b'/></g>"},
+ docLineas:{x:727,m:"<g stroke='#e8b84b' stroke-width='1.8' fill='none'><rect x='708' y='176' width='38' height='46' rx='3'/><line x1='714' y1='188' x2='740' y2='188' stroke='#b98f34'/><line x1='714' y1='197' x2='740' y2='197' stroke='#b98f34'/><line x1='714' y1='206' x2='732' y2='206' stroke='#b98f34'/></g>"},
+ diana:{x:933,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><circle cx='933' cy='197' r='16'/><circle cx='933' cy='197' r='9'/><circle cx='933' cy='197' r='2.5' fill='#e8b84b' stroke='none'/></g>"},
+ terminal:{x:105,m:"<g stroke='#968f7e' stroke-width='2' fill='none'><rect x='80' y='178' width='50' height='36' rx='4'/><path d='M88 190 l6 5 l-6 5' stroke='#e8b84b'/><line x1='100' y1='202' x2='112' y2='202' stroke='#e8b84b'/></g>"},
+ checkbox:{x:363,m:"<g fill='none'><rect x='343' y='185' width='13' height='13' rx='2.5' stroke='#e8b84b' stroke-width='2'/><path d='M346 191 l3 3 l5 -6' stroke='#e8b84b' stroke-width='2'/><rect x='343' y='203' width='13' height='13' rx='2.5' stroke='#5a4c25' stroke-width='2'/><line x1='363' y1='192' x2='392' y2='192' stroke='#b98f34' stroke-width='2'/><line x1='363' y1='210' x2='388' y2='210' stroke='#5a4c25' stroke-width='2'/></g>"},
+ guardaAbajo:{x:620,m:"<g stroke='#e8b84b' stroke-width='2' fill='none'><line x1='620' y1='180' x2='620' y2='202'/><path d='M613 195 l7 8 l7 -8'/><path d='M604 210 h32' stroke-width='2.4'/></g>"},
+ fichero:{x:877,m:"<g stroke='#e8b84b' stroke-width='1.8' fill='none'><path d='M862 176 h22 l8 8 v34 a3 3 0 0 1 -3 3 h-27 a3 3 0 0 1 -3 -3 v-39 a3 3 0 0 1 3 -3 z'/><line x1='868' y1='196' x2='886' y2='196' stroke='#b98f34'/><line x1='868' y1='205' x2='886' y2='205' stroke='#b98f34'/><line x1='868' y1='214' x2='880' y2='214' stroke='#b98f34'/></g>"},
+ candado:{x:1135,m:"<g stroke='#e8b84b' stroke-width='2.2' fill='none'><rect x='1121' y='194' width='28' height='20' rx='3'/><path d='M1126 194 v-6 a9 9 0 0 1 18 0 v6'/><circle cx='1135' cy='204' r='2.4' fill='#e8b84b' stroke='none'/></g>"}
+};
+
+function esqX(n){const G=ESQ_G,st=(G.xn-G.x0)/(n-1),a=[];
+ for(let i=0;i<n;i++){const x=G.x0+i*st;a.push({x:x,xc:x+G.w/2});}return a;}
+
+function esqSVG(P){
+ const G=ESQ_G,pos=esqX(P.nodos.length),F="\"'JetBrains Mono',monospace\"";
+ let s="<svg viewBox='0 0 1240 292' role='img' aria-label='"+P.alt+"'><defs>"+
+  "<marker id='"+P.id+"-ar' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0,0 L10,5 L0,10 z' fill='#e8b84b'/></marker>"+
+  "<marker id='"+P.id+"-arDim' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0,0 L10,5 L0,10 z' fill='#7a6329'/></marker>"+
+  "<pattern id='"+P.id+"-grid' width='40' height='40' patternUnits='userSpaceOnUse'><path d='M40 0 H0 V40' fill='none' stroke='#171b24' stroke-width='1'/></pattern>"+
+  "<linearGradient id='"+P.id+"-fill' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#1c1913'/><stop offset='1' stop-color='#12140f'/></linearGradient>"+
+  "</defs><rect x='0' y='0' width='1240' height='292' fill='url(#"+P.id+"-grid)' opacity='.5'/>";
+
+ // conectores entre nodos
+ s+="<g stroke='#e8b84b' stroke-width='2' fill='none'>";
+ for(let i=0;i<pos.length-1;i++)
+  s+="<line x1='"+(pos[i].x+G.w)+"' y1='"+G.yLin+"' x2='"+(pos[i+1].x-6)+"' y2='"+G.yLin+"' marker-end='url(#"+P.id+"-ar)'/>";
+ s+="</g>";
+
+ // nodos
+ s+="<g font-family=\"'Space Grotesk',sans-serif\">";
+ P.nodos.forEach((nd,i)=>{
+  const p=pos[i],ic=ESQ_IC[nd.ic],borde=(i===0||i===P.nodos.length-1)?'#4a3f22':'#7a6329';
+  s+="<rect x='"+p.x+"' y='"+G.yBox+"' width='"+G.w+"' height='"+G.hBox+"' rx='14' fill='url(#"+P.id+"-fill)' stroke='"+borde+"' stroke-width='1.5'/>";
+  if(i>0&&i<P.nodos.length-1)
+   s+="<text x='"+(p.x+11)+"' y='"+(G.yBox+18)+"' font-family="+F+" font-size='10.5' font-weight='700' fill='#e8b84b'>"+i+"</text>";
+  // el icono conserva su dibujo original y solo se reubica
+  s+="<g transform='translate("+p.xc.toFixed(1)+","+G.yIc+") scale("+G.sIc+") translate("+(-ic.x)+",-197)'>"+ic.m.split('{P}').join(P.id)+"</g>";
+  s+="<text x='"+p.xc.toFixed(1)+"' y='"+G.yTit+"' text-anchor='middle' font-size='13.5' font-weight='600' fill='#f6f2e9'>"+nd.t+"</text>";
+  s+="<text x='"+p.xc.toFixed(1)+"' y='"+G.ySub+"' text-anchor='middle' font-family="+F+" font-size='9' fill='"+(nd.cool?'#82b6d0':'#968f7e')+"'>"+nd.s+"</text>";
+ });
+ s+="</g>";
+
+ // etiquetas sobre las flechas
+ s+="<g fill='#968f7e' font-family="+F+" font-size='9.5' text-anchor='middle'>";
+ (P.flechas||[]).forEach((t,i)=>{if(t)s+="<text x='"+((pos[i].x+G.w+pos[i+1].x)/2).toFixed(1)+"' y='"+G.yFle+"'>"+t+"</text>";});
+ s+="</g>";
+
+ // datos colgando de un nodo
+ (P.datos||[]).forEach(d=>{const xc=pos[d.i].xc.toFixed(1),c=d.cool?'#82b6d0':'#e8b84b';
+  s+="<text x='"+xc+"' y='"+G.yCo1+"' text-anchor='middle' font-family="+F+" font-size='11' font-weight='700' fill='"+c+"'>"+d.v+"</text>";
+  if(d.l)s+="<text x='"+xc+"' y='"+G.yCo2+"' text-anchor='middle' font-family="+F+" font-size='9' fill='#968f7e'>"+d.l+"</text>";});
+
+ // el camino malo
+ const M=P.malo,yR=G.yRow;
+ s+="<path d='M"+pos[0].xc.toFixed(1)+" "+(G.yBox+G.hBox)+" C "+pos[0].xc.toFixed(1)+" 176, 150 194, 206 "+(yR+18)+"' fill='none' stroke='#7a6329' stroke-width='2' stroke-dasharray='5 6' marker-end='url(#"+P.id+"-arDim)'/>"+
+  "<text x='150' y='182' font-family="+F+" font-size='9.5' fill='#7a6329' text-anchor='middle' transform='rotate(34 150 182)'>"+M.via+"</text>"+
+  "<rect x='222' y='"+yR+"' width='300' height='"+G.hRow+"' rx='12' fill='#111017' stroke='#4a2b2b' stroke-width='1.5' stroke-dasharray='6 5'/>"+
+  "<g stroke='#8a4a4a' stroke-width='2.4' fill='none'><circle cx='254' cy='"+(yR+38)+"' r='13'/>"+
+  (M.reloj?"<path d='M254 "+(yR+31)+" v8 l5 4'/>":"<line x1='246' y1='"+(yR+30)+"' x2='262' y2='"+(yR+46)+"'/><line x1='262' y1='"+(yR+30)+"' x2='246' y2='"+(yR+46)+"'/>")+"</g>"+
+  "<text x='282' y='"+(yR+32)+"' font-family=\"'Space Grotesk',sans-serif\" font-size='13.5' font-weight='600' fill='#b58888'>"+M.t+"</text>"+
+  "<text x='282' y='"+(yR+50)+"' font-family="+F+" font-size='9.5' fill='#7a6b6b'>"+M.s+"</text>";
+ if(M.tachado)s+="<line x1='280' y1='"+(yR+46)+"' x2='"+(282+M.s.length*5.4).toFixed(0)+"' y2='"+(yR+46)+"' stroke='#7a6b6b' stroke-width='1'/>";
+
+ // el resultado medido
+ const B=P.bien,xu=pos[pos.length-1].xc.toFixed(1);
+ s+="<path d='M"+xu+" "+(G.yBox+G.hBox)+" V "+(yR-4)+"' fill='none' stroke='#e8b84b' stroke-width='2' marker-end='url(#"+P.id+"-ar)'/>"+
+  "<rect x='940' y='"+yR+"' width='274' height='"+G.hRow+"' rx='13' fill='none' stroke='#e8b84b' stroke-width='1.8'/>"+
+  "<text x='984' y='"+(yR+48)+"' font-family="+F+" font-size='"+(B.fs||34)+"' font-weight='700' fill='#e8b84b' text-anchor='middle'>"+B.n+"</text>"+
+  "<text x='1026' y='"+(yR+26)+"' font-family=\"'Space Grotesk',sans-serif\" font-size='13.5' font-weight='600' fill='#f6f2e9'>"+B.t+"</text>";
+ (B.notas||[]).forEach((t,i)=>{
+  s+="<text x='1026' y='"+(yR+42+i*13)+"' font-family="+F+" font-size='10' fill='"+(i<(B.notas.length-(B.fuente?1:0))?'#82b6d0':'#968f7e')+"'>"+t+"</text>";});
+ s+="</svg>";
+ return s;
+}
+
+/* Contenido de cada esquema. Toda cifra sale de un fichero del repo o de
+   ejecutar sus tests; las verificadas van marcadas en el pie. */
+const ESQUEMAS={
+ vendiq:{id:'esq-vq',kick:'VendIQ · cómo funciona por dentro',
+  h:"El bot responde desde <span class='g'>tu catálogo</span>, no desde su imaginación",
+  sub:"Primero busca el dato, después decide si puede decirlo, y solo al final redacta. Ese orden es lo que evita que se invente un precio.",
+  alt:'Flujo RAG de VendIQ: el mensaje del cliente pasa por buscar en el catálogo de 5.010 fichas, encontrar la ficha real, decidir con guardarraíles y redactar, hasta una respuesta con dato real. Sin RAG va directo a inventar. Medido: 0 fugas de precio en 930 conversaciones.',
+  nodos:[{t:'CLIENTE',s:'whatsapp · gmail',ic:'chat'},{t:'BUSCA',s:'retrieval',ic:'lupa'},
+   {t:'ENCUENTRA',s:'augmented',ic:'fichas'},{t:'DECIDE',s:'guardarraíles',ic:'bifurca',cool:true},
+   {t:'REDACTA',s:'generation · Groq',ic:'chatOut'},{t:'RESPUESTA',s:'dato real',ic:'check'}],
+  flechas:['mensaje','','ficha','acción','tono'],
+  datos:[{i:1,v:'5.010 fichas',l:'búsqueda híbrida'},{i:3,v:'536 veces',l:'retuvo el precio',cool:true}],
+  malo:{via:'sin RAG',t:'SE LO INVENTA',s:'«alternador Bosch, 210 €»',tachado:true},
+  bien:{n:'0',t:'fugas de precio',fs:38,notas:['930 conversaciones','2.558 mensajes','salida/actividad.json'],fuente:1},
+  leg:['<b>con RAG</b> · busca el dato y luego redacta','<b>sin RAG</b> · va directo a inventar']},
+
+ leads:{id:'esq-ld',kick:'GitHub · Sistema Comercial de Leads',
+  h:"Convierte una lista sucia de contactos en una <span class='g'>operación de ventas</span>",
+  sub:"La lista entra sucia y sale limpia, puntuada por criterios de negocio y repartida en el equipo.",
+  alt:'Sistema comercial de leads: una lista sucia se limpia, se prioriza por potencial, se reparte entre el equipo y se hace seguimiento en el CRM, dejando 1.000 leads organizados en segundos con 65 pruebas automáticas.',
+  nodos:[{t:'CSV SUCIO',s:'contactos',ic:'docSucio'},{t:'LIMPIA',s:'validador.py',ic:'embudo'},
+   {t:'PRIORIZA',s:'lead_scorer.py',ic:'barras3'},{t:'REPARTE',s:'reparto.py',ic:'hub'},
+   {t:'SEGUIMIENTO',s:'crm.py',ic:'checklist'},{t:'PIPELINE',s:'organizado',ic:'check'}],
+  flechas:['sucios','limpio','score','equipo','agenda'],
+  datos:[{i:1,v:'regex · sin duplicados'},{i:2,v:'caliente / templado / frío'}],
+  malo:{via:'a mano',t:'SE ESCAPAN LEADS',s:'horas revisando a ojo'},
+  bien:{n:'1.000',t:'leads organizados',fs:28,notas:['en segundos','65 pruebas automáticas'],fuente:0},
+  leg:['<b>con el sistema</b> · limpio, priorizado y repartido','<b>a mano</b> · se cuela algún lead']},
+
+ dedup:{id:'esq-dd',kick:'GitHub · Limpiador-Deduplicador de CRM',
+  h:"Encuentra los duplicados que <span class='g'>un humano no ve</span> y los fusiona",
+  sub:"Dos fichas del mismo cliente casi nunca son idénticas. Basta con que coincida el email <b>o</b> el teléfono para agruparlas y fusionarlas, dejando escrito por qué se fue cada una.",
+  alt:'Deduplicador de CRM: un CSV sucio se normaliza, se agrupan duplicados aunque solo coincida el email o el teléfono, se fusionan en un registro maestro, se audita cada eliminación para GDPR y se genera un informe. 62 pruebas automáticas.',
+  nodos:[{t:'CSV SUCIO',s:'contactos',ic:'docSucio'},{t:'NORMALIZA',s:'email · teléfono',ic:'engranaje'},
+   {t:'AGRUPA',s:'duplicados',ic:'venn'},{t:'FUSIONA',s:'registro maestro',ic:'merge'},
+   {t:'AUDITA',s:'por qué · GDPR',ic:'escudo',cool:true},{t:'INFORME',s:'panel html',ic:'check'}],
+  flechas:['lee','formato','grupos','rastro','html'],
+  datos:[{i:2,v:'email O teléfono',l:'aunque solo 1 coincida'}],
+  malo:{via:'a ojo',t:'DUPLICADOS INVISIBLES',s:'el mismo cliente, 3 veces'},
+  bien:{n:'1',t:'registro maestro',fs:38,notas:['por grupo · rastro GDPR','62 pruebas automáticas'],fuente:0},
+  leg:['<b>con la herramienta</b> · un maestro + rastro auditable','<b>a ojo</b> · se cuelan duplicados']},
+
+ pipe:{id:'esq-pp',kick:'GitHub · Informe Semanal de Pipeline',
+  h:"El informe de pipeline que llevaba una hora, <span class='g'>en 2 segundos</span>",
+  sub:"Pipeline ponderado, dinero en riesgo, previsión y las tres acciones de la semana, sin que nadie los escriba a mano el lunes.",
+  alt:'Generador de informe de pipeline: una exportación CSV del CRM se lee, se calculan las métricas de ventas, se redacta el informe con sus alertas y se priorizan las tres acciones de la semana, produciendo el informe completo en 2 segundos frente a los 45-60 minutos a mano.',
+  nodos:[{t:'CSV CRM',s:'deals',ic:'docTabla'},{t:'LEE',s:'leer_deals',ic:'ojo'},
+   {t:'CALCULA',s:'métricas',ic:'barras4'},{t:'REDACTA',s:'informe + alertas',ic:'docLineas'},
+   {t:'ACCIONES',s:'las 3 de la semana',ic:'diana'},{t:'INFORME',s:'md · html',ic:'check'}],
+  flechas:['csv','deals','kpis','alertas','listo'],
+  datos:[{i:2,v:'pipeline · riesgo · forecast'}],
+  malo:{via:'a mano',t:'45-60 MIN A MANO',s:'cada lunes, a ojo',reloj:true},
+  bien:{n:'2 s',t:'informe completo',fs:32,notas:['revisa el 100% de los deals','10 pruebas automáticas'],fuente:0},
+  leg:['<b>con el script</b> · 2 s, revisa todo','<b>a mano</b> · 45-60 min, se olvida algún deal']},
+
+ tasks:{id:'esq-tk',kick:'GitHub · Gestor de Tareas (terminal)',
+  h:"Tareas por terminal que <span class='g'>no se pierden al cerrar</span>",
+  sub:"Mi primer proyecto: un menú, tres acciones y persistencia real en disco, sin una sola librería externa.",
+  alt:'Gestor de tareas por terminal: desde un menú se elige una acción (añadir, completar o borrar), cada cambio se guarda en tareas.txt con formato estado y texto, y al abrir se recarga, de modo que las tareas persisten sin ninguna dependencia externa.',
+  nodos:[{t:'MENÚ',s:'tareas.py',ic:'terminal'},{t:'ACCIÓN',s:'añade · completa · borra',ic:'checkbox'},
+   {t:'GUARDA',s:'guardar_tareas',ic:'guardaAbajo'},{t:'tareas.txt',s:'en disco',ic:'fichero'},
+   {t:'PERSISTE',s:'no se pierde',ic:'candado'}],
+  flechas:['elige','edita','escribe','al abrir'],
+  datos:[{i:2,v:'estado|texto'}],
+  malo:{via:'en memoria',t:'SE PIERDE AL CERRAR',s:'sin guardar en disco'},
+  bien:{n:'0',t:'dependencias',fs:38,notas:['Python puro · solo stdlib','sobreviven al cierre'],fuente:0},
+  leg:['<b>guardado en disco</b> · persiste','<b>solo en memoria</b> · se pierde al cerrar']}
+};
+
+function esqCard(id){const P=ESQUEMAS[id];if(!P)return'';
+ return "<div class='ragcard reveal'>"+
+  "<div class='kick'>"+P.kick+"</div><h3>"+P.h+"</h3><p class='sub'>"+P.sub+"</p>"+
+  "<div class='ragfig'>"+esqSVG(P)+"</div>"+
+  "<div class='ragleg'>"+
+   "<span class='lg'><span class='sw'></span> "+P.leg[0]+"</span>"+
+   "<span class='lg'><span class='sw dash'></span> "+P.leg[1]+"</span>"+
+  "</div></div>";}
+
+/* build interactive cards */
+(function(){const g=document.getElementById('cardGrid');let h='';
+ REPOS.forEach(R=>{const D=DETAIL[R.id]||{};
+  const files=R.files.map(f=>{const isdir=f.k==='dir'||f.n.endsWith('/');const url=(!R.soon&&R.code)?R.code+(isdir?'/tree/main/':'/blob/main/')+f.n:null;
+   const inner="<span class='fk'>"+f.k+"</span> "+f.n+" — "+f.d;
+   return url?"<a href='"+url+"' target='_blank' rel='noopener'>"+inner+"</a>":"<span>"+inner+"</span>";}).join('');
+  let imp;
+  if(D.impacto){const I=D.impacto;
+   imp="<div class='imp-bars'>"+
+     "<div class='imp-row antes'><div class='il'><span class='a'>Antes · "+I.antesL+"</span><span class='b'>"+I.antesV+"</span></div><div class='imp-bar'><span data-w='100%' style='width:100%'></span></div></div>"+
+     "<div class='imp-row despues'><div class='il'><span class='a'>Con la herramienta · "+I.despuesL+"</span><span class='b'>"+I.despuesV+"</span></div><div class='imp-bar'><span data-w='"+(I.barw||'6%')+"' style='width:"+(I.barw||'6%')+"'></span></div></div></div>"+
+     "<div class='imp-tiles'><div class='imp-tile'><div class='v'>"+I.ahorro+"</div><div class='l'>Tiempo ahorrado</div></div>"+
+     "<div class='imp-tile'><div class='v'>"+I.coste+"</div><div class='l'>Coste humano evitado</div></div>"+
+     "<div class='imp-tile'><div class='v'>"+I.roi+"</div><div class='l'>Rentabilidad</div></div></div>"+
+     "<div class='imp-note'>"+I.supuesto+"</div>";
+  }else{imp="<div class='learn-note'><b>Proyecto de fundamentos.</b> Mi primer proyecto en Python. No tiene un caso de negocio que medir, y no lo fuerzo: su valor es demostrar bases sólidas — código limpio, persistencia y decisiones documentadas.</div>";}
+  h+="<div class='pcard"+(R.flag?' flag':'')+" reveal'>"+
+    (R.flag?"<div class='pc-star'>★ PROYECTO ESTRELLA</div>":"")+
+    "<div class='pc-top'><h3>"+R.name+"</h3><span class='pc-tag'>"+R.tag+"</span></div>"+
+    // NIVEL 1 — una frase por línea. Lo que un reclutador lee en 5 segundos.
+    "<div class='pc-cols'><div class='pc-info'>"+
+    "<div class='psr'>"+
+     "<div class='r'><span class='k'>Problema</span><span class='v'>"+D.problema+"</span></div>"+
+     "<div class='r'><span class='k'>Solución</span><span class='v'>"+D.solucion+"</span></div>"+
+     "<div class='r res'><span class='k'>Resultado</span><span class='v'>"+D.resultado+"</span></div>"+
+    "</div>"+
+    // los enlaces cierran la columna izquierda, anclados abajo
+    "<div class='clinks'>"+
+     (R.demo?"<a class='ilink' href='"+R.demo+"' target='_blank' rel='noopener'>Demo online ↗</a>":"")+
+     (R.code?"<a class='ilink soft' href='"+R.code+"' target='_blank' rel='noopener'>Código ↗</a>":"")+
+     (R.soon?"<span class='ilink soon'>Código · publicándose</span>":"")+"</div>"+
+    "</div><div class='pc-live'>"+
+    // NIVEL 2 — el detalle, solo si lo pide.
+    "<div class='pc-tabs'><button class='on' data-t='0'>▶ Probar</button><button data-t='1'>📊 Impacto</button><button data-t='2'>📁 Ficheros ("+R.files.length+")</button></div>"+
+    "<div class='pc-body'>"+
+     "<div class='pc-panel on'><div class='demo'></div></div>"+
+     "<div class='pc-panel'>"+imp+"</div>"+
+     "<div class='pc-panel'><div class='filelist'>"+files+"</div></div>"+
+    "</div>"+
+   "</div></div></div>";
+  // cada proyecto lleva su esquema justo debajo
+  h+=esqCard(R.id);
+ });g.innerHTML=h;
+ g.querySelectorAll('.pcard').forEach((card,idx)=>{const R=REPOS[idx];const de=card.querySelector('.demo');if(de&&DEMOS[R.id])try{DEMOS[R.id](de);}catch(e){de.innerHTML="<div class='demo-hint'>Demo no disponible.</div>";}
+  const btns=card.querySelectorAll('.pc-tabs button'),pans=card.querySelectorAll('.pc-panel');
+  btns.forEach(b=>b.addEventListener('click',()=>{const t=+b.dataset.t;btns.forEach(x=>x.classList.remove('on'));pans.forEach(x=>x.classList.remove('on'));b.classList.add('on');pans[t].classList.add('on');
+   if(t===1)pans[t].querySelectorAll('.imp-bar span').forEach(s=>{const w=s.dataset.w;s.style.width='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{s.style.width=w;}));});}));
+ });
+})();
+
+/* ===== graph ===== */
+let nodes=[],links=[],byId={};
+function add(n){n.x=n.x||0;n.y=n.y||0;n.vx=0;n.vy=0;byId[n.id]=n;nodes.push(n);return n;}
+function link(a,b,kind){links.push({a,b,kind:kind||'tree'});}
+add({id:'root',type:'root',label:'Álvaro · IA para ventas',r:20,color:CROOT,text:'alvaro raiz ia ventas'});
+REPOS.forEach((R,i)=>{const ang=(i/REPOS.length)*Math.PI*2-Math.PI/2;
+ add({id:R.id,type:R.flag?'flag':'repo',label:R.name,r:R.flag?16:13,color:R.flag?CFLAG:CREPO,ref:R,
+  x:Math.cos(ang)*160,y:Math.sin(ang)*160,text:(R.name+' '+R.tag+' '+R.desc+' '+R.chips.join(' ')).toLowerCase()});
+ link('root',R.id);
+ R.files.forEach((f,j)=>{const a2=Math.random()*Math.PI*2;const fid=R.id+'_f'+j;
+  add({id:fid,type:'file',label:f.n,r:7,color:CFILE,visible:false,ref:f,repo:R.id,
+   x:byId[R.id].x+Math.cos(a2)*30,y:byId[R.id].y+Math.sin(a2)*30,text:(f.n+' '+f.d).toLowerCase()});
+  link(R.id,fid,'file');});
+});
+CONCEPTS.forEach((C,i)=>{const ang=(i/CONCEPTS.length)*Math.PI*2;
+ add({id:'c_'+C.id,type:'concept',label:C.name,r:9,color:CCON,ref:C,
+  x:Math.cos(ang)*235,y:Math.sin(ang)*235,text:(C.name+' '+C.desc).toLowerCase()});});
+REPOS.forEach(R=>R.concepts.forEach(cid=>link(R.id,'c_'+cid,'use')));
+FLOW.forEach(([a,b])=>link(a,b,'flow'));FOUND.forEach(([a,b])=>link(a,b,'found'));
+
+/* El canvas vive dentro de un <details> cerrado: si se midiera ahora daría 0x0 y
+   el grafo saldría en blanco. Todo esto arranca la primera vez que se abre, que
+   además evita el coste de la simulación a quien nunca baja al detalle. */
+let graphReady=false;
+function initGraph(){
+if(graphReady)return;graphReady=true;
+const cv=document.getElementById('g'),ctx=cv.getContext('2d');
+let DPR=Math.min(window.devicePixelRatio||1,2),W=0,H=0,view={x:0,y:0,k:1};
+function resize(){const r=cv.parentElement.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';}
+window.addEventListener('resize',resize);resize();view.x=W/2;view.y=H/2;
+let layerOff={},showFiles=true;
+function nodeVisible(n){if(n.type==='file')return showFiles&&!layerOff['file'];if(n.type==='concept'&&layerOff['concept'])return false;return true;}
+
+let alpha=1;
+function tick(){const vis=nodes.filter(nodeVisible),n=vis.length;
+ for(let i=0;i<n;i++){const a=vis[i];for(let j=i+1;j<n;j++){const b=vis[j];
+  let dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy;if(d2<0.01){d2=0.01;dx=Math.random();dy=Math.random();}
+  const d=Math.sqrt(d2),rep=(a.r+b.r)*30,f=rep*rep/d2*alpha*0.9,fx=dx/d*f,fy=dy/d*f;a.vx+=fx;a.vy+=fy;b.vx-=fx;b.vy-=fy;}}
+ links.forEach(l=>{const a=byId[l.a],b=byId[l.b];if(!nodeVisible(a)||!nodeVisible(b))return;
+  let dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||.01;
+  let rest=l.kind==='file'?34:(l.kind==='use'?120:(l.kind==='flow'||l.kind==='found'?85:105));
+  const f=(d-rest)/d*alpha*0.16,fx=dx*f,fy=dy*f;a.vx+=fx;a.vy+=fy;b.vx-=fx;b.vy-=fy;});
+ vis.forEach(p=>{if(p.pin){p.vx=0;p.vy=0;return;}p.vx+=(-p.x)*0.02*alpha;p.vy+=(-p.y)*0.02*alpha;p.vx*=0.82;p.vy*=0.82;p.x+=p.vx;p.y+=p.vy;});
+ if(alpha>0.02)alpha*=0.993;}
+function reheat(a){alpha=Math.max(alpha,a||0.6);}
+function world(px,py){return{x:(px-view.x)/view.k,y:(py-view.y)/view.k};}
+let hover=null,selected=null,hits=null;
+function draw(){ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,W,H);ctx.save();ctx.translate(view.x,view.y);ctx.scale(view.k,view.k);
+ links.forEach(l=>{const a=byId[l.a],b=byId[l.b];if(!nodeVisible(a)||!nodeVisible(b))return;
+  const dim=hits&&!(hits.has(a.id)&&hits.has(b.id));ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+  let col='rgba(232,184,75,.16)';if(l.kind==='use')col='rgba(168,138,58,.2)';if(l.kind==='file')col='rgba(203,185,138,.18)';if(l.kind==='flow')col='rgba(245,208,110,.6)';if(l.kind==='found')col='rgba(232,184,75,.3)';
+  if(selected&&(selected.id===a.id||selected.id===b.id))col='rgba(245,208,110,.7)';
+  ctx.strokeStyle=col;ctx.lineWidth=(l.kind==='flow'?2.2:1);ctx.globalAlpha=dim?0.18:1;ctx.stroke();ctx.globalAlpha=1;
+  if(l.kind==='flow'){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,an=Math.atan2(b.y-a.y,b.x-a.x),s=6;ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx-Math.cos(an-0.5)*s,my-Math.sin(an-0.5)*s);ctx.lineTo(mx-Math.cos(an+0.5)*s,my-Math.sin(an+0.5)*s);ctx.closePath();ctx.fillStyle='rgba(245,208,110,'+(dim?0.2:0.8)+')';ctx.fill();}});
+ nodes.forEach(nd=>{if(!nodeVisible(nd))return;const dim=hits&&!hits.has(nd.id),sel=selected&&selected.id===nd.id;
+  ctx.globalAlpha=dim?0.22:1;if(sel||nd.type==='root'||nd.type==='flag'){ctx.shadowColor=nd.color;ctx.shadowBlur=sel?24:13;}
+  ctx.beginPath();ctx.arc(nd.x,nd.y,nd.r,0,7);ctx.fillStyle=nd.color;ctx.fill();ctx.shadowBlur=0;
+  if(nd.type==='root'){ctx.lineWidth=2.2;ctx.strokeStyle=CREPO;ctx.stroke();}
+  if(nd.type==='flag'){ctx.lineWidth=1.8;ctx.strokeStyle='#fff';ctx.stroke();}
+  if(sel){ctx.lineWidth=2.4;ctx.strokeStyle='#fff';ctx.stroke();}
+  ctx.globalAlpha=dim?0.3:1;
+  if(nd.type!=='file'||sel||hover===nd||view.k>=1.0){const fs=nd.type==='root'?14:(nd.type==='concept'?11.5:(nd.type==='file'?10:13));
+   ctx.font='600 '+fs+'px Space Grotesk';ctx.textAlign='center';ctx.textBaseline='top';
+   let lbl=nd.label;if(nd.type==='flag')lbl='★ '+lbl;
+   ctx.shadowColor='rgba(0,0,0,.85)';ctx.shadowBlur=4;
+   ctx.fillStyle=nd.type==='concept'?'#f0e0b0':(nd.type==='file'?'#e2d3a6':(nd.type==='flag'?'#f9ecb8':'#f6f1e4'));
+   ctx.fillText(lbl,nd.x,nd.y+nd.r+3);ctx.shadowBlur=0;}
+  ctx.globalAlpha=1;});
+ ctx.restore();}
+function loop(){tick();draw();requestAnimationFrame(loop);}loop();
+
+let dragNode=null,panning=false,last=null,moved=false;
+cv.addEventListener('mousedown',e=>{const m=pos(e),n=pick(m.x,m.y);last={x:e.clientX,y:e.clientY};moved=false;if(n){dragNode=n;n.pin=true;cv.classList.add('drag');}else{panning=true;cv.classList.add('drag');}});
+window.addEventListener('mousemove',e=>{if(dragNode){const m=pos(e),w=world(m.x,m.y);dragNode.x=w.x;dragNode.y=w.y;reheat(0.5);moved=true;}
+ else if(panning){view.x+=e.clientX-last.x;view.y+=e.clientY-last.y;last={x:e.clientX,y:e.clientY};moved=true;}
+ else{const m=pos(e);if(m.x>=0&&m.y>=0&&m.x<=W&&m.y<=H){hover=pick(m.x,m.y);showTip(hover,e);}}});
+window.addEventListener('mouseup',()=>{if(dragNode){dragNode.pin=false;if(!moved)select(dragNode);dragNode=null;}else if(panning&&!moved){select(null);}panning=false;cv.classList.remove('drag');});
+cv.addEventListener('wheel',e=>{e.preventDefault();const m=pos(e),w=world(m.x,m.y);const f=e.deltaY<0?1.12:1/1.12;view.k=Math.max(.3,Math.min(3.2,view.k*f));view.x=m.x-w.x*view.k;view.y=m.y-w.y*view.k;},{passive:false});
+function pos(e){const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function pick(px,py){const w=world(px,py);let best=null,bd=1e9;nodes.forEach(n=>{if(!nodeVisible(n))return;const dx=n.x-w.x,dy=n.y-w.y,d=Math.sqrt(dx*dx+dy*dy);if(d<n.r+6&&d<bd){bd=d;best=n;}});return best;}
+const tip=document.getElementById('tip');
+function showTip(n,e){if(!n){tip.style.display='none';return;}let t,s;
+ if(n.type==='root'){t='Álvaro · IA para ventas';s='El centro';}else if(n.type==='concept'){t=n.ref.name;s='Técnica / dominio';}
+ else if(n.type==='file'){t=n.ref.n;s=byId[n.repo].name;}else{t=n.ref.name;s=n.ref.tag;}
+ tip.innerHTML="<div class='tt'>"+esc(t)+"</div><div class='ts'>"+esc(s)+"</div>";tip.style.display='block';
+ const r=cv.getBoundingClientRect();tip.style.left=Math.min(e.clientX-r.left+14,W-260)+'px';tip.style.top=(e.clientY-r.top+14)+'px';}
+function esc(s){return(s+'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+const insEmpty=document.getElementById('insEmpty'),ins=document.getElementById('ins');
+function select(n){selected=n;if(!n){insEmpty.style.display='';ins.style.display='none';return;}
+ insEmpty.style.display='none';ins.style.display='';
+ if((n.type==='repo'||n.type==='flag')&&!showFiles){/* reveal just this repo's files */
+  REPOS.find(r=>r.id===n.id).files.forEach((f,j)=>{byId[n.id+'_f'+j].visible=true;});reheat(0.6);}
+ ins.innerHTML=renderIns(n);ins.querySelectorAll('[data-go]').forEach(a=>a.onclick=()=>focusNode(a.getAttribute('data-go')));}
+function conns(id){const o=[];links.forEach(l=>{if(l.a===id)o.push([l.b,l.kind]);else if(l.b===id)o.push([l.a,l.kind]);});return o;}
+function tag(t,c){return"<span class='ins-tag' style='color:"+c+";background:"+c+"22;border:1px solid "+c+"55'>"+esc(t)+"</span>";}
+function connRow(id,kind){const n=byId[id];let nm=n.type==='root'?'Álvaro · IA para ventas':(n.type==='file'?n.ref.n:n.label);
+ let k=n.type==='concept'?'técnica':(n.type==='root'?'raíz':(n.type==='file'?'fichero':'proyecto'));if(kind==='flow')k='flujo →';if(kind==='found')k='base';
+ return"<a data-go='"+id+"'><span class='cdot' style='color:"+n.color+";background:"+n.color+"'></span>"+esc(nm)+"<span class='ck'>"+k+"</span></a>";}
+function renderIns(n){let h='';
+ if(n.type==='root'){h+=tag('Raíz','#f4f4f5')+"<div class='ins-title'>Álvaro Utazu Lázaro</div><div class='ins-meta'>AI Engineer · RAG y automatización · 5 proyectos</div>";
+  h+="<div class='ins-desc'>El perfil que entiende el negocio de ventas y además lo construye con IA. Todo cuelga de aquí.</div>";
+  h+="<div class='ins-h'><b>›</b> Proyectos</div><div class='conn'>"+REPOS.map(R=>connRow(R.id)).join('')+"</div>";}
+ else if(n.type==='concept'){h+=tag('Técnica / dominio','#a88a3a')+"<div class='ins-title'>"+esc(n.ref.name)+"</div><div class='ins-desc'>"+esc(n.ref.desc)+"</div>";
+  const rs=conns(n.id).map(x=>x[0]);h+="<div class='ins-h'><b>›</b> Presente en ("+rs.length+")</div><div class='conn'>"+rs.map(id=>connRow(id)).join('')+"</div>";}
+ else if(n.type==='file'){const R=byId[n.repo].ref;h+=tag('Fichero','#cbb98a')+"<div class='ins-title' style='font-size:16px'>"+esc(n.ref.n)+"</div><div class='ins-meta'>"+esc(R.name)+"</div><div class='ins-desc'>"+esc(n.ref.d)+"</div>";
+  h+="<div class='ilinks'>";if(!R.soon&&R.code){const isdir=n.ref.n.endsWith('/');h+="<a class='ilink' href='"+R.code+(isdir?'/tree/main/':'/blob/main/')+n.ref.n+"' target='_blank' rel='noopener'>Ver en GitHub ↗</a>";}else h+="<span class='ilink soon'>publicándose</span>";h+="</div>";
+  h+="<div class='ins-h'><b>›</b> Pertenece a</div><div class='conn'>"+connRow(n.repo)+"</div>";}
+ else{const R=n.ref;h+=tag(n.type==='flag'?'★ Proyecto estrella':'Proyecto',n.color)+"<div class='ins-title'>"+esc(R.name)+"</div><div class='ins-meta'>"+esc(R.tag)+"</div><div class='ins-desc'>"+esc(R.desc)+"</div>";
+  if(R.metrics)h+="<div class='gmetrics'>"+R.metrics.map(m=>"<div class='gmetric'><div class='v'>"+esc(m[0])+"</div><div class='l'>"+esc(m[1])+"</div></div>").join('')+"</div>";
+  h+="<div class='chips'>"+R.chips.map(c=>"<span class='chip'>"+esc(c)+"</span>").join('')+"</div><div class='ilinks'>";
+  if(R.demo)h+="<a class='ilink' href='"+R.demo+"' target='_blank' rel='noopener'>Demo ↗</a>";
+  if(R.code)h+="<a class='ilink soft' href='"+R.code+"' target='_blank' rel='noopener'>Código ↗</a>";
+  if(R.soon)h+="<span class='ilink soon'>Código · publicándose</span>";h+="</div>";
+  const fs=conns(n.id).filter(x=>byId[x[0]].type==='file');
+  const rs=conns(n.id).filter(x=>['repo','flag'].includes(byId[x[0]].type));
+  const cs=conns(n.id).filter(x=>byId[x[0]].type==='concept');
+  if(fs.length)h+="<div class='ins-h'><b>›</b> Ficheros ("+fs.length+")</div><div class='conn'>"+fs.map(x=>connRow(x[0])).join('')+"</div>";
+  if(rs.length)h+="<div class='ins-h'><b>›</b> Conecta con</div><div class='conn'>"+rs.map(x=>connRow(x[0],x[1])).join('')+"</div>";
+  if(cs.length)h+="<div class='ins-h'><b>›</b> Técnicas</div><div class='conn'>"+cs.map(x=>connRow(x[0])).join('')+"</div>";}
+ h+="<div class='note'>Grafo interactivo propio en canvas, sin librerías. Líneas <b>doradas</b> = flujo real: limpiar → priorizar → informar.</div>";return h;}
+
+function focusNode(id){const n=byId[id];if(!n)return;if(n.type==='file'){showFiles=true;syncFilesBtn();}
+ const tx=W*0.34-n.x*view.k,ty=H*0.5-n.y*view.k;animateView(tx,ty,Math.max(view.k,1));select(n);}
+let anim=null;
+function animateView(tx,ty,tk){if(anim)cancelAnimationFrame(anim);const x0=view.x,y0=view.y,k0=view.k,t0=performance.now(),dur=420;
+ function st(t){let p=Math.min(1,(t-t0)/dur);p=1-Math.pow(1-p,3);view.x=x0+(tx-x0)*p;view.y=y0+(ty-y0)*p;view.k=k0+(tk-k0)*p;if(p<1)anim=requestAnimationFrame(st);}anim=requestAnimationFrame(st);}
+
+const q=document.getElementById('q');
+q.addEventListener('input',()=>{const v=q.value.trim().toLowerCase();if(!v){hits=null;return;}const terms=v.split(/\s+/);hits=new Set();
+ nodes.forEach(n=>{if(n.text&&terms.every(t=>n.text.includes(t))){if(n.type==='file'){showFiles=true;syncFilesBtn();}hits.add(n.id);}});if(hits.size===0)hits=null;else reheat(0.3);});
+q.addEventListener('keydown',e=>{if(e.key==='Enter'&&hits&&hits.size){const id=[...hits].sort((a,b)=>rank(byId[a])-rank(byId[b]))[0];focusNode(id);}});
+function rank(n){return{root:0,flag:1,repo:2,concept:3,file:4}[n.type];}
+
+const filesBtn=document.getElementById('filesBtn');
+function syncFilesBtn(){filesBtn.classList.toggle('on',showFiles);filesBtn.textContent=showFiles?'⊖ Ocultar ficheros':'⊕ Mostrar ficheros';}
+filesBtn.onclick=()=>{showFiles=!showFiles;if(showFiles)nodes.forEach(n=>{if(n.type==='file')n.visible=true;});syncFilesBtn();reheat(0.7);};
+syncFilesBtn();
+
+const tourOrder=['root','vendiq','dedup','leads','pipe','tasks'];let tourI=-1,touring=false;
+const tourbar=document.getElementById('tourbar'),tourStep=document.getElementById('tourStep');
+function tourGo(d){tourI=Math.max(0,Math.min(tourOrder.length-1,tourI+d));const id=tourOrder[tourI];focusNode(id);const n=byId[id];tourStep.textContent=(tourI+1)+'/'+tourOrder.length+' · '+(n.type==='root'?'El centro':n.ref.name);}
+document.getElementById('tourBtn').onclick=()=>{touring=true;tourbar.classList.add('show');tourI=-1;tourGo(1);};
+document.getElementById('tourNext').onclick=()=>tourGo(1);document.getElementById('tourPrev').onclick=()=>tourGo(-1);
+document.getElementById('tourExit').onclick=()=>{touring=false;tourbar.classList.remove('show');};
+document.getElementById('zi').onclick=()=>{view.k=Math.min(3.2,view.k*1.2);};
+document.getElementById('zo').onclick=()=>{view.k=Math.max(.3,view.k/1.2);};
+document.getElementById('zr').onclick=fit;document.getElementById('fitBtn').onclick=fit;
+function fit(){const vis=nodes.filter(nodeVisible);let mnx=1e9,mny=1e9,mxx=-1e9,mxy=-1e9;vis.forEach(n=>{mnx=Math.min(mnx,n.x);mny=Math.min(mny,n.y);mxx=Math.max(mxx,n.x);mxy=Math.max(mxy,n.y);});
+ const bw=mxx-mnx+120,bh=mxy-mny+120,k=Math.min(W/bw,H/bh,1.9);animateView(W/2-((mnx+mxx)/2)*k,H/2-((mny+mxy)/2)*k,k);}
+const legend=document.getElementById('legend');
+legend.innerHTML="<div class='lgh'>Leyenda</div>"+
+ "<div class='lg'><span class='dot' style='color:"+CFLAG+";background:"+CFLAG+"'></span>Proyecto estrella</div>"+
+ "<div class='lg'><span class='dot' style='color:"+CREPO+";background:"+CREPO+"'></span>Proyecto</div>"+
+ "<div class='lg' data-k='file'><span class='dot' style='color:"+CFILE+";background:"+CFILE+"'></span>Fichero</div>"+
+ "<div class='lg' data-k='concept'><span class='dot' style='color:"+CCON+";background:"+CCON+"'></span>Técnica</div>"+
+ "<div class='flowk'><span class='ln'></span>Flujo real</div>";
+legend.querySelectorAll('.lg[data-k]').forEach(el=>el.onclick=()=>{const k=el.getAttribute('data-k');layerOff[k]=!layerOff[k];el.classList.toggle('off',layerOff[k]);reheat(0.4);});
+document.getElementById('statbar').innerHTML="<span class='pill'><b>"+REPOS.length+"</b> proyectos</span><span class='pill'>ficheros reales</span><span class='pill'>1 pipeline</span>";
+for(let i=0;i<260;i++)tick();fit();
+}
+/* Arranque perezoso + los enlaces a #grafo abren el panel al llegar. */
+(function(){const dd=document.getElementById('ddGraph');if(!dd)return;
+ dd.addEventListener('toggle',function(){if(dd.open)requestAnimationFrame(initGraph);});
+ document.querySelectorAll('a[href="#grafo"]').forEach(function(a){
+  a.addEventListener('click',function(){dd.open=true;requestAnimationFrame(initGraph);});});
+ if(location.hash==='#grafo')dd.open=true;
+ if(dd.open)requestAnimationFrame(initGraph);})();
+
+/* nav + reveal */
+(function(){const t=document.getElementById('navToggle'),l=document.getElementById('navLinks');if(t&&l){t.onclick=()=>l.classList.toggle('open');l.addEventListener('click',e=>{if(e.target.tagName==='A')l.classList.remove('open');});}})();
+(function(){const items=document.querySelectorAll('.reveal');if(!('IntersectionObserver'in window)){items.forEach(el=>el.classList.add('in'));return;}
+ const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:.14,rootMargin:'0px 0px -6% 0px'});items.forEach(el=>io.observe(el));})();
+
+/* KPIs: los números cuentan y las barras se rellenan al entrar en pantalla.
+   Con prefers-reduced-motion se pintan ya en su valor final, sin animar. */
+(function(){
+ const quieto=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+ function fmt(v,dec){return v.toLocaleString('es-ES',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
+ function contar(el){
+  const to=parseFloat(el.dataset.to),dec=parseInt(el.dataset.dec||'0',10),suf=el.dataset.suf||'';
+  if(quieto||!to){el.textContent=fmt(to,dec)+suf;return;}
+  const t0=performance.now(),dur=1100;
+  (function paso(t){let p=Math.min(1,(t-t0)/dur);p=1-Math.pow(1-p,3);
+   el.textContent=fmt(to*p,dec)+suf;if(p<1)requestAnimationFrame(paso);})(t0);}
+ function animar(k){
+  k.querySelectorAll('[data-to]').forEach(contar);
+  k.querySelectorAll('.meter span').forEach(function(s){
+   if(quieto){s.style.transition='none';}s.style.width=s.dataset.w;});}
+ const kpis=document.querySelectorAll('.kpi');
+ if(!('IntersectionObserver'in window)){kpis.forEach(animar);return;}
+ const io=new IntersectionObserver(function(es){es.forEach(function(e){
+  if(e.isIntersecting){animar(e.target);io.unobserve(e.target);}});},{threshold:.4});
+ kpis.forEach(function(k){io.observe(k);});})();
+
+/* fondo animado: malla de partículas doradas */
+(function(){const c=document.getElementById('bgcanvas');if(!c)return;const x=c.getContext('2d');
+ let w,h,dpr=Math.min(window.devicePixelRatio||1,2),P=[];
+ function rs(){w=window.innerWidth;h=window.innerHeight;c.width=w*dpr;c.height=h*dpr;c.style.width=w+'px';c.style.height=h+'px';x.setTransform(dpr,0,0,dpr,0,0);}
+ window.addEventListener('resize',()=>{rs();init();});rs();
+ function init(){P=[];const N=Math.min(72,Math.max(28,Math.floor(w*h/24000)));for(let i=0;i<N;i++)P.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,r:Math.random()*1.5+.6});}
+ init();
+ const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+ function frame(){x.clearRect(0,0,w,h);
+  for(const p of P){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;
+   x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fillStyle='rgba(232,184,75,.5)';x.fill();}
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+   if(d<130){x.globalAlpha=(1-d/130)*.16;x.strokeStyle='#e8b84b';x.lineWidth=1;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();x.globalAlpha=1;}}
+  requestAnimationFrame(frame);}
+ if(reduce){frame();}else requestAnimationFrame(frame);})();
+</script>
+</body>
+</html>

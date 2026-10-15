@@ -2319,6 +2319,14 @@ body.menu-open .header {
  font-family:var(--font-display);font-synthesis:none;font-weight:400}
 .portfolio[data-parrafos="matrix"] :is(.faq-item .ans,.psr .v,p.lead,.pc-lead-sub,.rx,.tp .td,.xp-card-d){font-size:15px;line-height:1.7}
 
+/* ── EL CRÉDITO DE LA LETRA ──
+   La web que sirve la letra de puntos pide, en su propio CSS, un enlace de
+   crédito en la página. Va al final del panel Contacto, pequeño, tenue y
+   pegado al pie (está en index.html, fuera de lo copiado). */
+.portfolio .credito-letra{margin-top:calc(var(--sp-4) * -1);padding-bottom:var(--sp-5);font-size:12px;line-height:1.5;color:var(--txt-faint)}
+.portfolio .credito-letra a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.portfolio .credito-letra a:hover{color:var(--txt)}
+
 /* ════════════════════════════════════════════════════════════════════════
    9 · EL MOVIMIENTO
    ------------------------------------------------------------------------
@@ -2665,6 +2673,9 @@ body.menu-open .header {
 </div></div></footer>
 
 <!-- ▲ fin de lo copiado ▲ -->
+      <!-- Escrito a mano, fuera de lo copiado: el crédito que pide, en su propio
+           CSS, la web que sirve la letra de puntos. -->
+      <div class="container"><p class="credito-letra">Letra de puntos hecha con <a href="http://www.onlinewebfonts.com/fonts" target="_blank" rel="noopener">Web Fonts</a>, con licencia CC BY 4.0.</p></div>
     </section>
   </div>
 

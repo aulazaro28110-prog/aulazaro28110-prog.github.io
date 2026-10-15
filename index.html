@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Portfolio de Álvaro Utazu en un solo fichero: la landing de la carpeta LANDING 11-10-2026 (versión publicada el 14-10-2026) con sus estilos, sus scripts y la letra de puntos dentro. El vídeo y las letras de texto se cargan de internet; la imagen de vista previa (vista-previa.jpg) va publicada al lado. -->
+<!-- Portfolio de Álvaro Utazu en un solo fichero: la landing de la carpeta LANDING 11-10-2026 (versión de 15-10-2026) con sus estilos, sus scripts y la letra de puntos dentro. El vídeo y las letras se cargan de internet (la de puntos lleva dentro una de respaldo); la imagen de vista previa (vista-previa.jpg) va publicada al lado. -->
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -32,6 +32,10 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
+  <link
+    href="https://db.onlinewebfonts.com/c/8cb707a9b8a73f8a7403336b861c3074?family=BubbledotICG-FinePos"
+    rel="stylesheet"
+  />
   <style>
 /* ==========================================================================
    Fonts
@@ -58,9 +62,7 @@
   --sign-in-text: #c8c8c8;
   --nav-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
   --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
-  /* Geist Pixel Circle only: free (SIL OFL) and served from this folder, so
-     the page does not depend on another site for its dot-matrix face */
-  --font-display: "Geist Pixel Circle", monospace;
+  --font-display: "BubbledotICG-FinePos", "Geist Pixel Circle", monospace;
 }
 
 /* ==========================================================================
@@ -749,7 +751,7 @@ body.menu-open .header {
   }
 
   .headline {
-    letter-spacing: -0.05em;
+    letter-spacing: -0.08em;
     line-height: 1.05;
   }
 
@@ -768,7 +770,7 @@ body.menu-open .header {
 
 @media (max-width: 420px) {
   .headline {
-    letter-spacing: -0.06em;
+    letter-spacing: -0.09em;
     line-height: 1.04;
   }
 }
